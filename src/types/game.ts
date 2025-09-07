@@ -1,6 +1,17 @@
 // Game Core Types
 export type Race = 'human' | 'elf' | 'undead' | 'orc'
 
+// Telegram User Type
+export interface TelegramUser {
+  id: number
+  first_name: string
+  last_name?: string
+  username?: string
+  language_code?: string
+  is_premium?: boolean
+  photo_url?: string
+}
+
 export interface Character {
   id: string
   userId: number
