@@ -134,7 +134,7 @@ function GameInterface({ character }: { character: any }) {
   const { setCurrentView } = useGameStore()
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pr-0 sm:pr-24">
       {/* Character Info Card */}
       <div className="card mb-6">
         <div className="text-center mb-4">

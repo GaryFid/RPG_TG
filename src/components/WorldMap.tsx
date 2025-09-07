@@ -40,7 +40,7 @@ export default function WorldMap() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 pr-0 sm:pr-24">
       <CryptoWallet />
       {/* Header */}
       <div className="text-center mb-6">

@@ -77,7 +77,7 @@ export default function CryptoWallet() {
       {/* Burger Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 right-4 z-50 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-fantasy-gold/20 group"
+        className="fixed top-4 right-4 z-50 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-fantasy-gold/20 group sm:block"
       >
         <div className="flex items-center space-x-2">
           <div className="text-2xl">💰</div>
@@ -97,7 +97,7 @@ export default function CryptoWallet() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="fixed top-20 right-4 z-40 w-80 bg-gradient-to-br from-fantasy-dark-blue/95 to-fantasy-emerald-dark/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-fantasy-gold/20 p-6 animate-fade-in">
+        <div className="fixed top-20 right-4 z-40 w-80 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-6rem)] bg-gradient-to-br from-fantasy-dark-blue/95 to-fantasy-emerald-dark/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-fantasy-gold/20 p-6 animate-fade-in overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-fantasy-gold flex items-center">
@@ -124,7 +124,7 @@ export default function CryptoWallet() {
           </div>
 
           {/* Crypto Balances */}
-          <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
+          <div className="space-y-3 mb-6 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-fantasy-gold/30 scrollbar-track-transparent">
             {cryptoBalances.map((crypto) => (
               <div
                 key={crypto.symbol}

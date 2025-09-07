@@ -46,7 +46,7 @@ export default function CharacterCreation() {
   }
   
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="container mx-auto px-4 py-8 max-w-2xl pr-0 sm:pr-24">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-4">
           ⚔️ Создание Персонажа ⚔️
