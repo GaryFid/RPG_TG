@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
+    let user = existingUser
+
     // Создаем пользователя если не существует
-    if (!existingUser) {
-      const { error: insertError } = await supabase
+    if (!user) {
+      const { data: newUser, error: insertError } = await supabase
         .from('users')
         .insert({
           telegram_id: telegramUser.id,
@@ -33,18 +35,22 @@ export async function POST(request: NextRequest) {
           first_name: telegramUser.first_name,
           last_name: telegramUser.last_name || null
         })
+        .select('*')
+        .single()
 
       if (insertError) {
         console.error('Error creating user:', insertError)
         return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
       }
+
+      user = newUser
     }
 
     // Проверяем существует ли персонаж
     const { data: character, error: characterError } = await supabase
       .from('characters')
       .select('*')
-      .eq('user_id', existingUser?.id)
+      .eq('user_id', user.id)
       .single()
 
     if (characterError && characterError.code !== 'PGRST116') {
