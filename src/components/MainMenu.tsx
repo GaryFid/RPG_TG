@@ -29,7 +29,7 @@ export default function MainMenu({ user }: MainMenuProps) {
       icon: '⚔️',
       description: 'Создай своего героя и начни эпическое приключение',
       action: handleStartNewGame,
-      gradient: 'from-fantasy-crimson to-red-600'
+      gradient: 'from-fantasy-blue-emerald to-blue-600'
     },
     {
       id: 'select-hero',
@@ -83,9 +83,9 @@ export default function MainMenu({ user }: MainMenuProps) {
         position="top-center"
         toastOptions={{
           style: {
-            background: '#7f1d1d',
+            background: '#1e3a8a',
             color: '#fff',
-            border: '1px solid #991b1b'
+            border: '1px solid #1e40af'
           }
         }}
       />
@@ -109,7 +109,7 @@ export default function MainMenu({ user }: MainMenuProps) {
           </p>
           
           {user && (
-            <div className="bg-gradient-to-r from-fantasy-dark-red/80 to-fantasy-emerald-dark/80 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto border border-fantasy-gold/20">
+            <div className="bg-gradient-to-r from-fantasy-dark-blue/80 to-fantasy-emerald-dark/80 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto border border-fantasy-gold/20">
               <h2 className="text-xl font-semibold mb-2 text-fantasy-gold">
                 🌟 Добро пожаловать, {user.first_name}!
               </h2>
@@ -152,7 +152,7 @@ export default function MainMenu({ user }: MainMenuProps) {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-fantasy-dark-red/50 to-fantasy-emerald-dark/50 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto border border-fantasy-gold/20">
+          <div className="bg-gradient-to-r from-fantasy-dark-blue/50 to-fantasy-emerald-dark/50 backdrop-blur-sm rounded-xl p-6 max-w-2xl mx-auto border border-fantasy-gold/20">
             <p className="text-fantasy-gold text-lg font-semibold mb-2">
               🌟 Мир полон магии и опасностей 🌟
             </p>
@@ -172,7 +172,7 @@ function AboutPage({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen container mx-auto px-6 py-12">
       <button 
         onClick={onBack}
-        className="mb-8 bg-gradient-to-r from-fantasy-crimson to-red-600 hover:from-red-600 hover:to-fantasy-crimson px-6 py-3 rounded-xl font-bold transition-all duration-300"
+        className="mb-8 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald px-6 py-3 rounded-xl font-bold transition-all duration-300"
       >
         ← Назад в меню
       </button>
@@ -183,7 +183,7 @@ function AboutPage({ onBack }: { onBack: () => void }) {
         </h1>
         
         <div className="grid gap-8">
-          <div className="bg-gradient-to-r from-fantasy-dark-red/80 to-fantasy-emerald-dark/80 backdrop-blur-sm rounded-2xl p-8 border border-fantasy-gold/20">
+          <div className="bg-gradient-to-r from-fantasy-dark-blue/80 to-fantasy-emerald-dark/80 backdrop-blur-sm rounded-2xl p-8 border border-fantasy-gold/20">
             <h2 className="text-2xl font-bold mb-4 text-fantasy-gold">🌍 Мир Арканум</h2>
             <p className="text-gray-200 leading-relaxed mb-4">
               Добро пожаловать в мистический мир Арканум — землю, где магия течет в венах самой реальности, 
@@ -241,7 +241,7 @@ function ClansPage({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen container mx-auto px-6 py-12">
       <button 
         onClick={onBack}
-        className="mb-8 bg-gradient-to-r from-fantasy-crimson to-red-600 hover:from-red-600 hover:to-fantasy-crimson px-6 py-3 rounded-xl font-bold transition-all duration-300"
+        className="mb-8 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald px-6 py-3 rounded-xl font-bold transition-all duration-300"
       >
         ← Назад в меню
       </button>
@@ -287,7 +287,7 @@ function FriendsPage({ onBack }: { onBack: () => void }) {
     <div className="min-h-screen container mx-auto px-6 py-12">
       <button 
         onClick={onBack}
-        className="mb-8 bg-gradient-to-r from-fantasy-crimson to-red-600 hover:from-red-600 hover:to-fantasy-crimson px-6 py-3 rounded-xl font-bold transition-all duration-300"
+        className="mb-8 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald px-6 py-3 rounded-xl font-bold transition-all duration-300"
       >
         ← Назад в меню
       </button>

@@ -29,12 +29,13 @@ module.exports = {
           water: '#3b82f6',
           earth: '#16a34a',
           air: '#f59e0b',
-          'dark-red': '#7f1d1d',
-          'blood-red': '#991b1b',
-          'crimson': '#dc2626',
+          'dark-blue': '#1e3a8a',
+          'navy': '#1e40af',
+          'blue-deep': '#1d4ed8',
           'emerald-dark': '#064e3b',
           'emerald': '#059669',
           'emerald-light': '#10b981',
+          'blue-emerald': '#0369a1',
         }
       },
       animation: {
