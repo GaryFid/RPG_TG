@@ -5,6 +5,7 @@ import { useGameStore } from '@/stores/gameStore'
 import { BASE_ITEMS, getCityById } from '@/lib/gameData'
 import { Item, ShopItem } from '@/types/game'
 import toast from 'react-hot-toast'
+import CryptoWallet from './CryptoWallet'
 
 export default function CityShop() {
   const { character, selectedCity, updateCharacter, setCurrentView } = useGameStore()
@@ -135,6 +136,7 @@ export default function CityShop() {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <CryptoWallet />
       {/* Header */}
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-4">

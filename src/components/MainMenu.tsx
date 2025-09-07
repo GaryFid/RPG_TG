@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useGameStore } from '@/stores/gameStore'
 import { TelegramUser } from '@/types/game'
 import { Toaster } from 'react-hot-toast'
+import CryptoWallet from './CryptoWallet'
 
 interface MainMenuProps {
   user: TelegramUser | null
@@ -79,6 +80,7 @@ export default function MainMenu({ user }: MainMenuProps) {
 
   return (
     <div className="min-h-screen">
+      <CryptoWallet />
       <Toaster 
         position="top-center"
         toastOptions={{
@@ -170,6 +172,7 @@ export default function MainMenu({ user }: MainMenuProps) {
 function AboutPage({ onBack }: { onBack: () => void }) {
   return (
     <div className="min-h-screen container mx-auto px-6 py-12">
+      <CryptoWallet />
       <button 
         onClick={onBack}
         className="mb-8 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald px-6 py-3 rounded-xl font-bold transition-all duration-300"
@@ -239,6 +242,7 @@ function AboutPage({ onBack }: { onBack: () => void }) {
 function ClansPage({ onBack }: { onBack: () => void }) {
   return (
     <div className="min-h-screen container mx-auto px-6 py-12">
+      <CryptoWallet />
       <button 
         onClick={onBack}
         className="mb-8 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald px-6 py-3 rounded-xl font-bold transition-all duration-300"
@@ -285,6 +289,7 @@ function ClansPage({ onBack }: { onBack: () => void }) {
 function FriendsPage({ onBack }: { onBack: () => void }) {
   return (
     <div className="min-h-screen container mx-auto px-6 py-12">
+      <CryptoWallet />
       <button 
         onClick={onBack}
         className="mb-8 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald px-6 py-3 rounded-xl font-bold transition-all duration-300"

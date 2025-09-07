@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useGameStore } from '@/stores/gameStore'
 import { CITIES } from '@/lib/gameData'
 import { City } from '@/types/game'
+import CryptoWallet from './CryptoWallet'
 
 export default function WorldMap() {
   const { character, setSelectedCity, setCurrentView } = useGameStore()
@@ -40,6 +41,7 @@ export default function WorldMap() {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <CryptoWallet />
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-2">
