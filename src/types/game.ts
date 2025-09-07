@@ -61,6 +61,14 @@ export interface City {
   coordinates: { x: number; y: number }
 }
 
+export interface Reward {
+  id: string
+  type: 'experience' | 'gold' | 'item'
+  value: number
+  itemId?: string
+  chance: number // 0-100
+}
+
 export interface Location {
   id: string
   name: string
