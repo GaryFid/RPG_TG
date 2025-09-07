@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Character already exists' }, { status: 400 })
     }
 
-    // Бонусы рас
-    const raceBonuses = {
+    // Бонусы рас с правильной типизацией
+    const raceBonuses: Record<Race, { strength: number; agility: number; intelligence: number; vitality: number }> = {
       human: { strength: 5, agility: 5, intelligence: 5, vitality: 10 },
       elf: { strength: 0, agility: 15, intelligence: 10, vitality: 0 },
       undead: { strength: 8, agility: 2, intelligence: 10, vitality: 5 },
