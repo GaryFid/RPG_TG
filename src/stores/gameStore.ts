@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { Character, TelegramUser, Race } from '@/types/game'
-import { supabase } from '@/lib/supabase'
 
 interface GameState {
   // User & Auth
@@ -87,48 +86,26 @@ export const useGameStore = create<GameState>()(
         set({ isLoading: true })
         
         try {
-          // Check if user exists in database
-          const { data: existingUser, error: userError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('telegram_id', telegramUser.id)
-            .single()
-          
-          if (userError && userError.code !== 'PGRST116') {
-            throw userError
+          const response = await fetch('/api/user/init', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ telegramUser })
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to initialize user')
           }
-          
-          // Create user if doesn't exist
-          if (!existingUser) {
-            const { error: insertError } = await supabase
-              .from('users')
-              .insert({
-                telegram_id: telegramUser.id,
-                username: telegramUser.username || null,
-                first_name: telegramUser.first_name,
-                last_name: telegramUser.last_name || null
-              })
-            
-            if (insertError) throw insertError
-          }
-          
-          // Check for existing character
-          const { data: character, error: characterError } = await supabase
-            .from('characters')
-            .select('*')
-            .eq('user_id', existingUser?.id)
-            .single()
-          
-          if (characterError && characterError.code !== 'PGRST116') {
-            throw characterError
-          }
+
+          const data = await response.json()
           
           set({
-            user: telegramUser,
+            user: data.user,
             isAuthenticated: true,
-            characterExists: !!character,
-            character: character as Character | null,
-            currentView: character ? 'game' : 'character-creation',
+            characterExists: data.characterExists,
+            character: data.character,
+            currentView: data.character ? 'game' : 'character-creation',
             isLoading: false
           })
           
@@ -147,56 +124,27 @@ export const useGameStore = create<GameState>()(
         set({ isLoading: true })
         
         try {
-          // Get user from database
-          const { data: dbUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('telegram_id', user.id)
-            .single()
-          
-          if (!dbUser) throw new Error('User not found')
-          
-          // Race bonuses (matching gameData.ts)
-          const raceBonuses = {
-            human: { strength: 5, agility: 5, intelligence: 5, vitality: 10 },
-            elf: { strength: 0, agility: 15, intelligence: 10, vitality: 0 },
-            undead: { strength: 8, agility: 2, intelligence: 10, vitality: 5 },
-            orc: { strength: 20, agility: 0, intelligence: -5, vitality: 10 }
+          const response = await fetch('/api/character/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              telegramUserId: user.id,
+              name,
+              race
+            })
+          })
+
+          if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.error || 'Failed to create character')
           }
-          
-          const bonuses = raceBonuses[race]
-          
-          const newCharacter = {
-            user_id: dbUser.id,
-            name,
-            race,
-            level: 1,
-            experience: 0,
-            strength: 10 + bonuses.strength,
-            agility: 10 + bonuses.agility,
-            intelligence: 10 + bonuses.intelligence,
-            vitality: 10 + bonuses.vitality,
-            max_health: 100 + (bonuses.vitality * 5),
-            health: 100 + (bonuses.vitality * 5),
-            max_mana: 50 + (bonuses.intelligence * 2),
-            mana: 50 + (bonuses.intelligence * 2),
-            gold: 100,
-            current_city: 'kingdom_capital',
-            equipment: {},
-            inventory: [],
-            skills: []
-          }
-          
-          const { data: character, error } = await supabase
-            .from('characters')
-            .insert(newCharacter)
-            .select()
-            .single()
-          
-          if (error) throw error
+
+          const data = await response.json()
           
           set({
-            character: character as Character,
+            character: data.character as Character,
             characterExists: true,
             currentView: 'game',
             isLoading: false
@@ -207,67 +155,47 @@ export const useGameStore = create<GameState>()(
           
         } catch (error) {
           console.error('Error creating character:', error)
-          get().showNotif('Ошибка создания персонажа', 'error')
+          get().showNotif(error instanceof Error ? error.message : 'Ошибка создания персонажа', 'error')
           set({ isLoading: false })
           return false
         }
       },
       
-      // Load character data
+      // Load character data (now handled by initializeUser)
       loadCharacter: async () => {
-        const { user } = get()
-        if (!user) return
-        
-        try {
-          const { data: dbUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('telegram_id', user.id)
-            .single()
-          
-          if (!dbUser) return
-          
-          const { data: character, error } = await supabase
-            .from('characters')
-            .select('*')
-            .eq('user_id', dbUser.id)
-            .single()
-          
-          if (error && error.code !== 'PGRST116') throw error
-          
-          if (character) {
-            set({ 
-              character: character as Character,
-              characterExists: true 
-            })
-          }
-          
-        } catch (error) {
-          console.error('Error loading character:', error)
-          get().showNotif('Ошибка загрузки персонажа', 'error')
-        }
+        // This function is now redundant as character loading is handled in initializeUser
+        // Keeping for compatibility
       },
       
       // Update character
       updateCharacter: async (updates: Partial<Character>) => {
-        const { character } = get()
-        if (!character) return
+        const { character, user } = get()
+        if (!character || !user) return
         
         try {
-          const { data, error } = await supabase
-            .from('characters')
-            .update(updates)
-            .eq('id', character.id)
-            .select()
-            .single()
-          
-          if (error) throw error
-          
-          set({ character: data as Character })
+          const response = await fetch('/api/character/update', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              telegramUserId: user.id,
+              characterId: character.id,
+              updates
+            })
+          })
+
+          if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.error || 'Failed to update character')
+          }
+
+          const data = await response.json()
+          set({ character: data.character as Character })
           
         } catch (error) {
           console.error('Error updating character:', error)
-          get().showNotif('Ошибка обновления персонажа', 'error')
+          get().showNotif(error instanceof Error ? error.message : 'Ошибка обновления персонажа', 'error')
         }
       },
       
