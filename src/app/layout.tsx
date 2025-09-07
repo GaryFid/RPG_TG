@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -18,10 +19,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <head>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-      </head>
       <body className={`${inter.className} min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900`}>
+        <Script 
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="beforeInteractive"
+        />
         <div className="min-h-screen text-white">
           {children}
         </div>
