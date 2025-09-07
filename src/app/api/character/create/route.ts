@@ -15,9 +15,12 @@ export async function POST(request: NextRequest) {
     }
 
     const validRaces: Race[] = ['human', 'elf', 'undead', 'orc']
-    if (!validRaces.includes(race)) {
+    if (!validRaces.includes(race as Race)) {
       return NextResponse.json({ error: 'Invalid race' }, { status: 400 })
     }
+
+    // Type assertion after validation
+    const validatedRace = race as Race
 
     const supabase = createServerSupabaseClient()
 
@@ -51,12 +54,12 @@ export async function POST(request: NextRequest) {
       orc: { strength: 20, agility: 0, intelligence: -5, vitality: 10 }
     }
 
-    const bonuses = raceBonuses[race]
+    const bonuses = raceBonuses[validatedRace]
 
     const newCharacter = {
       user_id: user.id,
       name,
-      race,
+      race: validatedRace,
       level: 1,
       experience: 0,
       strength: 10 + bonuses.strength,
