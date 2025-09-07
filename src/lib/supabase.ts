@@ -2,8 +2,12 @@ import { createClient } from '@supabase/supabase-js'
 
 // Серверный клиент Supabase (только для API роутов)
 export const createServerSupabaseClient = () => {
-  const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co'
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'placeholder-key'
+  const supabaseUrl = process.env.SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing Supabase environment variables')
+  }
 
   return createClient(supabaseUrl, supabaseServiceKey, {
     auth: {

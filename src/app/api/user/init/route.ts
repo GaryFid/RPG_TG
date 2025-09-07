@@ -9,6 +9,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid telegram user data' }, { status: 400 })
     }
 
+    // Проверяем переменные окружения
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      console.error('Missing Supabase environment variables')
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+    }
+
     const supabase = createServerSupabaseClient()
 
     // Проверяем существует ли пользователь
@@ -20,7 +26,11 @@ export async function POST(request: NextRequest) {
 
     if (userError && userError.code !== 'PGRST116') {
       console.error('Error checking user:', userError)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      return NextResponse.json({ 
+        error: 'Database error', 
+        details: userError.message,
+        code: userError.code 
+      }, { status: 500 })
     }
 
     let user = existingUser
@@ -40,7 +50,11 @@ export async function POST(request: NextRequest) {
 
       if (insertError) {
         console.error('Error creating user:', insertError)
-        return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
+        return NextResponse.json({ 
+          error: 'Failed to create user', 
+          details: insertError.message,
+          code: insertError.code 
+        }, { status: 500 })
       }
 
       user = newUser
@@ -55,7 +69,11 @@ export async function POST(request: NextRequest) {
 
     if (characterError && characterError.code !== 'PGRST116') {
       console.error('Error checking character:', characterError)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      return NextResponse.json({ 
+        error: 'Database error', 
+        details: characterError.message,
+        code: characterError.code 
+      }, { status: 500 })
     }
 
     return NextResponse.json({
