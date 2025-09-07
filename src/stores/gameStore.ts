@@ -42,6 +42,7 @@ interface GameState {
   
   // Utility
   reset: () => void
+  clearCache: () => void
 }
 
 const initialState = {
@@ -86,6 +87,17 @@ export const useGameStore = create<GameState>()(
         set({ isLoading: true })
         
         try {
+          // Проверяем, не сменился ли пользователь
+          const { user: currentUser } = get()
+          if (currentUser && currentUser.id !== telegramUser.id) {
+            // Пользователь сменился - очищаем кеш и сбрасываем все данные
+            console.log('User changed, clearing cache...', {
+              oldUserId: currentUser.id,
+              newUserId: telegramUser.id
+            })
+            get().clearCache()
+          }
+          
           const response = await fetch('/api/user/init', {
             method: 'POST',
             headers: {
@@ -201,6 +213,16 @@ export const useGameStore = create<GameState>()(
       
       // Reset state
       reset: () => set(initialState),
+      
+      // Clear cache and reset
+      clearCache: () => {
+        // Очищаем localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('tgrpg-game-store')
+        }
+        // Сбрасываем состояние
+        set(initialState)
+      },
     }),
     {
       name: 'tgrpg-game-store',

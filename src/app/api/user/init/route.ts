@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
+    // Логируем для отладки
+    console.log('User lookup:', {
+      telegramId: telegramUser.id,
+      username: telegramUser.username,
+      found: !!existingUser
+    })
+
     let user = existingUser
 
     // Создаем пользователя если не существует
@@ -75,6 +82,14 @@ export async function POST(request: NextRequest) {
         code: characterError.code 
       }, { status: 500 })
     }
+
+    // Логируем для отладки
+    console.log('Character lookup:', {
+      userId: user.id,
+      characterName: character?.name,
+      characterId: character?.id,
+      found: !!character
+    })
 
     return NextResponse.json({
       user: telegramUser,

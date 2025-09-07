@@ -27,22 +27,39 @@ export async function POST(request: NextRequest) {
     // Получаем пользователя
     const { data: user, error: userError } = await supabase
       .from('users')
-      .select('id')
+      .select('id, telegram_id, first_name')
       .eq('telegram_id', telegramUserId)
       .single()
 
     if (userError || !user) {
+      console.error('User not found:', { telegramUserId, error: userError })
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    console.log('Creating character for user:', {
+      userId: user.id,
+      telegramId: user.telegram_id,
+      name: user.first_name
+    })
+
     // Проверяем что у пользователя еще нет персонажа
-    const { data: existingCharacter } = await supabase
+    const { data: existingCharacter, error: existingError } = await supabase
       .from('characters')
-      .select('id')
+      .select('id, name')
       .eq('user_id', user.id)
       .single()
 
+    if (existingError && existingError.code !== 'PGRST116') {
+      console.error('Error checking existing character:', existingError)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+
     if (existingCharacter) {
+      console.log('Character already exists:', {
+        characterId: existingCharacter.id,
+        characterName: existingCharacter.name,
+        userId: user.id
+      })
       return NextResponse.json({ error: 'Character already exists' }, { status: 400 })
     }
 
@@ -87,6 +104,13 @@ export async function POST(request: NextRequest) {
       console.error('Error creating character:', createError)
       return NextResponse.json({ error: 'Failed to create character' }, { status: 500 })
     }
+
+    console.log('Character created successfully:', {
+      characterId: character.id,
+      characterName: character.name,
+      userId: user.id,
+      telegramId: user.telegram_id
+    })
 
     return NextResponse.json({
       success: true,
