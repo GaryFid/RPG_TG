@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body className={`${inter.className} min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900`}>
+      <body className={`${inter.className} min-h-screen bg-gradient-to-br from-fantasy-dark-red via-fantasy-blood-red to-fantasy-emerald-dark`}>
         <Script 
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"

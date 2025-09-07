@@ -15,10 +15,10 @@ module.exports = {
       colors: {
         primary: {
           50: '#f0f9ff',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          900: '#1e3a8a',
+          500: '#dc2626',
+          600: '#b91c1c',
+          700: '#991b1b',
+          900: '#7f1d1d',
         },
         fantasy: {
           gold: '#ffd700',
@@ -29,6 +29,12 @@ module.exports = {
           water: '#3b82f6',
           earth: '#16a34a',
           air: '#f59e0b',
+          'dark-red': '#7f1d1d',
+          'blood-red': '#991b1b',
+          'crimson': '#dc2626',
+          'emerald-dark': '#064e3b',
+          'emerald': '#059669',
+          'emerald-light': '#10b981',
         }
       },
       animation: {

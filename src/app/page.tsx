@@ -5,6 +5,7 @@ import { useGameStore } from '@/stores/gameStore'
 import CharacterCreation from '@/components/CharacterCreation'
 import WorldMap from '@/components/WorldMap'
 import CityShop from '@/components/CityShop'
+import MainMenu from '@/components/MainMenu'
 import toast, { Toaster } from 'react-hot-toast'
 
 export default function Home() {
@@ -121,84 +122,7 @@ export default function Home() {
 
   // Fallback - show welcome screen
   return (
-    <div>
-      <Toaster 
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: '#1f2937',
-            color: '#fff',
-            border: '1px solid #374151'
-          }
-        }}
-      />
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-fantasy-gold mb-4">
-            ⚔️ tgRPG ⚔️
-          </h1>
-          <p className="text-xl text-gray-300 mb-8">
-            Стратегическая фэнтези RPG игра
-          </p>
-          
-          {user && (
-            <div className="card mb-8">
-              <h2 className="text-2xl font-semibold mb-4 text-fantasy-gold">
-                Добро пожаловать, {user.first_name}!
-              </h2>
-              <p className="text-gray-300">
-                Готов начать свое эпическое приключение?
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="card hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-            <div className="text-center">
-              <div className="text-4xl mb-4">🏰</div>
-              <h3 className="text-xl font-semibold mb-2 text-fantasy-gold">Города</h3>
-              <p className="text-sm text-gray-400">8 уникальных городов для торговли и квестов</p>
-            </div>
-          </div>
-
-          <div className="card hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-            <div className="text-center">
-              <div className="text-4xl mb-4">⚔️</div>
-              <h3 className="text-xl font-semibold mb-2 text-fantasy-gold">Битвы</h3>
-              <p className="text-sm text-gray-400">Сражайся с монстрами и прокачивай героя</p>
-            </div>
-          </div>
-
-          <div className="card hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-            <div className="text-center">
-              <div className="text-4xl mb-4">🛡️</div>
-              <h3 className="text-xl font-semibold mb-2 text-fantasy-gold">Крафт</h3>
-              <p className="text-sm text-gray-400">Создавай мощное оружие и броню</p>
-            </div>
-          </div>
-
-          <div className="card hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-            <div className="text-center">
-              <div className="text-4xl mb-4">🧝‍♀️</div>
-              <h3 className="text-xl font-semibold mb-2 text-fantasy-gold">Расы</h3>
-              <p className="text-sm text-gray-400">Выбери из 4 уникальных рас</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-center">
-          <button className="btn-primary text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-            🚀 Начать игру
-          </button>
-        </div>
-
-        <div className="mt-12 text-center text-sm text-gray-400">
-          <p>🌟 Фэнтези мир ждет героев 🌟</p>
-          <p className="mt-2">Расы: Люди 👨‍⚔️ | Эльфы 🧝‍♀️ | Нежить ☠️ | Орки 👹</p>
-        </div>
-      </main>
-    </div>
+    <MainMenu user={user} />
   )
 }
 
