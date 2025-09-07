@@ -86,7 +86,7 @@ export const useGameStore = create<GameState>()(
         set({ isLoading: true })
         
         try {
-          const response = await fetch('/api/user/init', {
+          const response = await fetch('/api/user/init-simple', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
