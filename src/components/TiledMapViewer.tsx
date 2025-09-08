@@ -22,6 +22,7 @@ export default function TiledMapViewer({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [mapLoaded, setMapLoaded] = useState(false)
   const rendererRef = useRef<TiledMapRenderer | null>(null)
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function TiledMapViewer({
         await renderer.loadMap(mapData)
         
         setIsLoading(false)
+        setMapLoaded(true)
         if (onMapLoad) {
           onMapLoad()
         }

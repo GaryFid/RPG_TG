@@ -37,7 +37,7 @@ export interface TiledTileset {
 export class TiledMapRenderer {
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
-  private map: TiledMap
+  private map!: TiledMap
   private tilesets: Map<number, HTMLImageElement> = new Map()
   private loadedTilesets: number = 0
   private totalTilesets: number = 0

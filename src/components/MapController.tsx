@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import MapPlayer from './MapPlayer'
 
 interface MapControllerProps {
@@ -22,7 +22,7 @@ export default function MapController({
   const [playerY, setPlayerY] = useState(10)
   const [isMoving, setIsMoving] = useState(false)
 
-  const movePlayer = (deltaX: number, deltaY: number) => {
+  const movePlayer = useCallback((deltaX: number, deltaY: number) => {
     if (isMoving) return
 
     const newX = Math.max(0, Math.min(mapWidth - 1, playerX + deltaX))
@@ -40,7 +40,7 @@ export default function MapController({
       // Сброс флага движения через анимацию
       setTimeout(() => setIsMoving(false), 300)
     }
-  }
+  }, [isMoving, mapWidth, mapHeight, playerX, playerY, onPositionChange])
 
   // Обработка клавиатуры
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function MapController({
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [playerX, playerY, isMoving])
+  }, [playerX, playerY, isMoving, movePlayer])
 
   return (
     <div className={`relative ${className}`}>

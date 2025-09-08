@@ -7,7 +7,6 @@ import { City } from '@/types/game'
 import CryptoWallet from './CryptoWallet'
 import TiledMapViewer from './TiledMapViewer'
 import { TiledMap } from '@/lib/tiledMapRenderer'
-import MapTest from './MapTest'
 
 export default function WorldMap() {
   const { character, setSelectedCity, setCurrentView } = useGameStore()
@@ -21,7 +20,6 @@ export default function WorldMap() {
   useEffect(() => {
     const loadMapData = async () => {
       try {
-        console.log('Loading map data...')
         const response = await fetch('/assets/maps/my_world.json')
         
         if (!response.ok) {
@@ -29,12 +27,9 @@ export default function WorldMap() {
         }
         
         const data = await response.json()
-        console.log('Map data loaded successfully:', data)
         setMapData(data)
       } catch (error) {
         console.error('Failed to load map data:', error)
-        // Показываем пользователю ошибку
-        alert('Ошибка загрузки карты. Проверьте консоль для подробностей.')
       }
     }
     
@@ -94,10 +89,6 @@ export default function WorldMap() {
         </p>
       </div>
 
-      {/* Debug Test */}
-      <div className="mb-4">
-        <MapTest />
-      </div>
 
       {/* View Mode Toggle */}
       <div className="flex justify-center mb-4">
