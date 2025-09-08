@@ -1,19 +1,59 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGameStore } from '@/stores/gameStore'
 import { CITIES } from '@/lib/gameData'
 import { City } from '@/types/game'
 import CryptoWallet from './CryptoWallet'
+import TiledMapViewer from './TiledMapViewer'
+import { TiledMap } from '@/lib/tiledMapRenderer'
+import MapTest from './MapTest'
 
 export default function WorldMap() {
   const { character, setSelectedCity, setCurrentView } = useGameStore()
   const [selectedCityInfo, setSelectedCityInfo] = useState<City | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [mapData, setMapData] = useState<TiledMap | null>(null)
+  const [mapLoaded, setMapLoaded] = useState(false)
+  const [viewMode, setViewMode] = useState<'tiled' | 'cities'>('tiled')
+
+  // Загружаем данные карты
+  useEffect(() => {
+    const loadMapData = async () => {
+      try {
+        console.log('Loading map data...')
+        const response = await fetch('/assets/maps/my_world.json')
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        console.log('Map data loaded successfully:', data)
+        setMapData(data)
+      } catch (error) {
+        console.error('Failed to load map data:', error)
+        // Показываем пользователю ошибку
+        alert('Ошибка загрузки карты. Проверьте консоль для подробностей.')
+      }
+    }
+    
+    loadMapData()
+  }, [])
 
   const handleCityClick = (city: City) => {
     setSelectedCityInfo(city)
     setIsModalOpen(true)
+  }
+
+  const handleTileClick = (x: number, y: number, tileId: number) => {
+    console.log(`Clicked tile at (${x}, ${y}) with ID: ${tileId}`)
+    // Здесь можно добавить логику для взаимодействия с тайлами
+  }
+
+  const handleMapLoad = () => {
+    setMapLoaded(true)
+    console.log('Tiled map loaded successfully!')
   }
 
   const handleTravelToCity = (cityId: string) => {
@@ -54,70 +94,138 @@ export default function WorldMap() {
         </p>
       </div>
 
+      {/* Debug Test */}
+      <div className="mb-4">
+        <MapTest />
+      </div>
+
+      {/* View Mode Toggle */}
+      <div className="flex justify-center mb-4">
+        <div className="bg-gray-700 rounded-lg p-1 flex">
+          <button
+            onClick={() => setViewMode('tiled')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              viewMode === 'tiled'
+                ? 'bg-fantasy-gold text-black'
+                : 'text-gray-300 hover:text-white'
+            }`}
+          >
+            🗺️ Tiled Карта
+          </button>
+          <button
+            onClick={() => setViewMode('cities')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              viewMode === 'cities'
+                ? 'bg-fantasy-gold text-black'
+                : 'text-gray-300 hover:text-white'
+            }`}
+          >
+            🏰 Города
+          </button>
+        </div>
+      </div>
+
       {/* World Map Container */}
       <div className="card mb-6">
-        <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-green-900 via-blue-900 to-purple-900 rounded-lg overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-10 text-6xl">🏔️</div>
-            <div className="absolute top-20 right-20 text-4xl">🌲</div>
-            <div className="absolute bottom-20 left-20 text-5xl">🌊</div>
-            <div className="absolute bottom-10 right-10 text-3xl">🏜️</div>
-            <div className="absolute top-1/3 left-1/3 text-4xl">⛰️</div>
-            <div className="absolute top-2/3 right-1/3 text-3xl">🌳</div>
-          </div>
-
-          {/* Cities */}
-          {CITIES.map((city) => {
-            const isCurrentCity = character.current_city === city.id
-            const isVisited = true // TODO: Track visited cities
+        {viewMode === 'tiled' && mapData ? (
+          <div className="relative">
+            <TiledMapViewer
+              mapData={mapData}
+              onMapLoad={handleMapLoad}
+              onTileClick={handleTileClick}
+              enablePlayerControl={true}
+              className="w-full"
+            />
             
-            return (
-              <button
-                key={city.id}
-                onClick={() => handleCityClick(city)}
-                className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 ${
-                  isCurrentCity 
-                    ? 'ring-4 ring-fantasy-gold animate-pulse' 
-                    : 'hover:ring-2 hover:ring-white'
-                }`}
-                style={{
-                  left: `${city.coordinates.x}%`,
-                  top: `${city.coordinates.y}%`
-                }}
-              >
-                <div className="text-center">
-                  <div className={`text-4xl md:text-5xl mb-1 ${
-                    isCurrentCity ? 'animate-bounce' : ''
-                  }`}>
-                    {city.emoji}
-                  </div>
-                  <div className={`px-2 py-1 rounded text-xs font-bold shadow-lg ${
-                    isCurrentCity 
-                      ? 'bg-fantasy-gold text-black' 
-                      : isVisited
-                        ? 'bg-gray-700 text-white'
-                        : 'bg-gray-800 text-gray-400'
-                  }`}>
-                    {city.name}
-                  </div>
-                </div>
-              </button>
-            )
-          })}
+            {/* Overlay с информацией о карте */}
+            {mapLoaded && (
+              <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
+                <p className="text-sm">
+                  <span className="text-fantasy-gold">Карта:</span> {mapData.width}×{mapData.height} тайлов
+                </p>
+                <p className="text-sm">
+                  <span className="text-fantasy-gold">Размер тайла:</span> {mapData.tilewidth}×{mapData.tileheight}px
+                </p>
+                <p className="text-sm">
+                  <span className="text-fantasy-gold">Слоев:</span> {mapData.layers.length}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : viewMode === 'cities' ? (
+          <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-green-900 via-blue-900 to-purple-900 rounded-lg overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-10 left-10 text-6xl">🏔️</div>
+              <div className="absolute top-20 right-20 text-4xl">🌲</div>
+              <div className="absolute bottom-20 left-20 text-5xl">🌊</div>
+              <div className="absolute bottom-10 right-10 text-3xl">🏜️</div>
+              <div className="absolute top-1/3 left-1/3 text-4xl">⛰️</div>
+              <div className="absolute top-2/3 right-1/3 text-3xl">🌳</div>
+            </div>
 
-          {/* Roads/Paths (decorative) */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
-            <defs>
-              <path id="road" stroke="#8B4513" strokeWidth="2" fill="none" strokeDasharray="5,5" />
-            </defs>
-            {/* Example roads between cities */}
-            <line x1="20%" y1="20%" x2="50%" y2="50%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
-            <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
-            <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
-            <line x1="30%" y1="70%" x2="60%" y2="30%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
-          </svg>
-        </div>
+            {/* Cities */}
+            {CITIES.map((city) => {
+              const isCurrentCity = character.current_city === city.id
+              const isVisited = true // TODO: Track visited cities
+              
+              return (
+                <button
+                  key={city.id}
+                  onClick={() => handleCityClick(city)}
+                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 ${
+                    isCurrentCity 
+                      ? 'ring-4 ring-fantasy-gold animate-pulse' 
+                      : 'hover:ring-2 hover:ring-white'
+                  }`}
+                  style={{
+                    left: `${city.coordinates.x}%`,
+                    top: `${city.coordinates.y}%`
+                  }}
+                >
+                  <div className="text-center">
+                    <div className={`text-4xl md:text-5xl mb-1 ${
+                      isCurrentCity ? 'animate-bounce' : ''
+                    }`}>
+                      {city.emoji}
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs font-bold shadow-lg ${
+                      isCurrentCity 
+                        ? 'bg-fantasy-gold text-black' 
+                        : isVisited
+                          ? 'bg-gray-700 text-white'
+                          : 'bg-gray-800 text-gray-400'
+                    }`}>
+                      {city.name}
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+
+            {/* Roads/Paths (decorative) */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
+              <defs>
+                <path id="road" stroke="#8B4513" strokeWidth="2" fill="none" strokeDasharray="5,5" />
+              </defs>
+              {/* Example roads between cities */}
+              <line x1="20%" y1="20%" x2="50%" y2="50%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
+              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
+              <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
+              <line x1="30%" y1="70%" x2="60%" y2="30%" stroke="#8B4513" strokeWidth="2" strokeDasharray="5,5" />
+            </svg>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-96 bg-gray-800 rounded-lg">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-fantasy-gold mx-auto mb-4"></div>
+              <p className="text-gray-400">Загрузка карты...</p>
+              {!mapData && (
+                <p className="text-sm text-gray-500 mt-2">Загружаем данные карты...</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Actions */}
