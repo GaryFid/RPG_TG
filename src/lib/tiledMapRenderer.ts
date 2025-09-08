@@ -50,10 +50,15 @@ export class TiledMapRenderer {
 
   async loadMap(mapData: TiledMap): Promise<void> {
     this.map = mapData
-    this.totalTilesets = mapData.tilesets.length
     
-    // Загружаем все тайлсеты
-    const loadPromises = mapData.tilesets.map((tileset, index) => 
+    // Фильтруем тайлсеты, которые имеют изображения
+    const tilesetsWithImages = mapData.tilesets.filter(tileset => tileset.image)
+    this.totalTilesets = tilesetsWithImages.length
+    
+    console.log(`Loading ${this.totalTilesets} tilesets with images`)
+    
+    // Загружаем только тайлсеты с изображениями
+    const loadPromises = tilesetsWithImages.map((tileset, index) => 
       this.loadTileset(tileset, index)
     )
     
@@ -69,10 +74,18 @@ export class TiledMapRenderer {
 
   private async loadTileset(tileset: TiledTileset, index: number): Promise<void> {
     return new Promise((resolve, reject) => {
+      // Проверяем, что tileset.image существует
+      if (!tileset.image) {
+        console.error('Tileset image is undefined:', tileset)
+        reject(new Error('Tileset image is undefined'))
+        return
+      }
+
       const img = new Image()
       img.onload = () => {
         this.tilesets.set(tileset.firstgid, img)
         this.loadedTilesets++
+        console.log(`Tileset loaded: ${tileset.name}`)
         resolve()
       }
       img.onerror = () => {
@@ -82,11 +95,18 @@ export class TiledMapRenderer {
       
       // Преобразуем путь к тайлсету
       const imagePath = this.getTilesetImagePath(tileset.image)
+      console.log(`Loading tileset image: ${imagePath}`)
       img.src = imagePath
     })
   }
 
   private getTilesetImagePath(imagePath: string): string {
+    // Проверяем, что imagePath существует и является строкой
+    if (!imagePath || typeof imagePath !== 'string') {
+      console.error('Invalid imagePath:', imagePath)
+      return '/assets/tilesets/placeholder.png'
+    }
+    
     // Извлекаем имя файла из пути
     const fileName = imagePath.split('/').pop() || imagePath.split('\\').pop()
     return `/assets/tilesets/${fileName}`
@@ -166,9 +186,11 @@ export class TiledMapRenderer {
   }
 
   private renderTile(gid: number, x: number, y: number): void {
-    // Находим подходящий тайлсет
+    // Находим подходящий тайлсет (только с изображениями)
     let tileset: TiledTileset | null = null
-    for (const ts of this.map.tilesets) {
+    const tilesetsWithImages = this.map.tilesets.filter(ts => ts.image)
+    
+    for (const ts of tilesetsWithImages) {
       if (gid >= ts.firstgid) {
         tileset = ts
       } else {

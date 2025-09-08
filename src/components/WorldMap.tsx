@@ -7,6 +7,7 @@ import { City } from '@/types/game'
 import CryptoWallet from './CryptoWallet'
 import TiledMapViewer from './TiledMapViewer'
 import { TiledMap } from '@/lib/tiledMapRenderer'
+import MapDebug from './MapDebug'
 
 export default function WorldMap() {
   const { character, setSelectedCity, setCurrentView } = useGameStore()
@@ -15,11 +16,13 @@ export default function WorldMap() {
   const [mapData, setMapData] = useState<TiledMap | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
   const [viewMode, setViewMode] = useState<'tiled' | 'cities'>('tiled')
+  const [error, setError] = useState<string | null>(null)
 
   // Загружаем данные карты
   useEffect(() => {
     const loadMapData = async () => {
       try {
+        console.log('Loading map data...')
         const response = await fetch('/assets/maps/my_world.json')
         
         if (!response.ok) {
@@ -27,9 +30,12 @@ export default function WorldMap() {
         }
         
         const data = await response.json()
+        console.log('Map data loaded:', data)
+        console.log('Tilesets:', data.tilesets)
         setMapData(data)
       } catch (error) {
         console.error('Failed to load map data:', error)
+        setError('Ошибка загрузки карты')
       }
     }
     
@@ -115,6 +121,25 @@ export default function WorldMap() {
           </button>
         </div>
       </div>
+
+      {/* Debug Component */}
+      <div className="mb-4">
+        <MapDebug />
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-900 rounded-lg">
+          <h3 className="text-lg font-bold text-red-300 mb-2">Ошибка загрузки карты</h3>
+          <p className="text-red-200">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-2 px-4 py-2 bg-red-700 hover:bg-red-600 rounded text-white"
+          >
+            Перезагрузить
+          </button>
+        </div>
+      )}
 
       {/* World Map Container */}
       <div className="card mb-6">
