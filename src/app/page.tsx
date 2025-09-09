@@ -5,6 +5,8 @@ import { useGameStore } from '@/stores/gameStore'
 import CharacterCreation from '@/components/CharacterCreation'
 import WorldMap from '@/components/WorldMap'
 import CityShop from '@/components/CityShop'
+import Inventory from '@/components/Inventory'
+import HutManager from '@/components/HutManager'
 import MainMenu from '@/components/MainMenu'
 import CryptoWallet from '@/components/CryptoWallet'
 import toast, { Toaster } from 'react-hot-toast'
@@ -118,6 +120,8 @@ export default function Home() {
         {currentView === 'game' && <GameInterface character={character} />}
         {currentView === 'map' && <WorldMap />}
         {currentView === 'shop' && <CityShop />}
+        {currentView === 'inventory' && <Inventory />}
+        {currentView === 'huts' && <HutManager />}
         {/* Add other views as needed */}
       </div>
     )
@@ -237,12 +241,21 @@ function GameInterface({ character }: { character: any }) {
         </button>
 
         <button 
-          onClick={() => alert('Инвентарь в разработке!')}
-          className="card hover:shadow-lg transition-all duration-300 cursor-pointer text-center p-6 opacity-75"
+          onClick={() => setCurrentView('inventory')}
+          className="card hover:shadow-lg transition-all duration-300 cursor-pointer text-center p-6"
         >
           <div className="text-4xl mb-2">🎒</div>
           <h3 className="text-lg font-semibold text-fantasy-gold mb-1">Инвентарь</h3>
           <p className="text-sm text-gray-400">Управляй предметами</p>
+        </button>
+
+        <button 
+          onClick={() => setCurrentView('huts')}
+          className="card hover:shadow-lg transition-all duration-300 cursor-pointer text-center p-6"
+        >
+          <div className="text-4xl mb-2">🏠</div>
+          <h3 className="text-lg font-semibold text-fantasy-gold mb-1">Хижины</h3>
+          <p className="text-sm text-gray-400">Управляй владениями</p>
         </button>
 
         <button 

@@ -5,6 +5,7 @@ import { useGameStore } from '@/stores/gameStore'
 import { TiledMap } from '@/lib/tiledMapRenderer'
 import TiledMapViewer from './TiledMapViewer'
 import CharacterSprite, { useCharacterSprites } from './CharacterSprite'
+import HutBuilder from './HutBuilder'
 
 interface FullscreenWorldMapProps {
   onClose: () => void
@@ -22,6 +23,7 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<HTMLDivElement>(null)
   const { characters, selectedCharacter, selectCharacter } = useCharacterSprites()
+  const [showHutBuilder, setShowHutBuilder] = useState(false)
 
   // Загружаем данные карты
   useEffect(() => {
@@ -152,6 +154,15 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
         </div>
         
         <div className="flex items-center space-x-2">
+          {/* Кнопка строительства хижин */}
+          <button
+            onClick={() => setShowHutBuilder(true)}
+            className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-white text-sm"
+            title="Построить хижину"
+          >
+            🏠 Строить
+          </button>
+          
           {/* Кнопка сброса */}
           <button
             onClick={resetView}
@@ -297,6 +308,16 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
           <p>• Клик по персонажу: выбор</p>
         </div>
       </div>
+
+      {/* Строительство хижин */}
+      {showHutBuilder && mapData && (
+        <HutBuilder
+          onClose={() => setShowHutBuilder(false)}
+          mapWidth={mapData.width}
+          mapHeight={mapData.height}
+          tileSize={mapData.tilewidth}
+        />
+      )}
     </div>
   )
 }

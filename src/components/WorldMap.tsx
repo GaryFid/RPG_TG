@@ -89,10 +89,6 @@ export default function WorldMap() {
 
   return (
     <div className="container mx-auto px-4 py-6 pr-0 sm:pr-24">
-      {/* Плоская кнопка кошелька в верхней части */}
-      <div className="mb-4">
-        <CryptoWallet variant="flat" />
-      </div>
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-2">
@@ -104,7 +100,6 @@ export default function WorldMap() {
           </span>
         </p>
       </div>
-
 
       {/* View Mode Toggle */}
       <div className="flex justify-center mb-4">
@@ -132,22 +127,17 @@ export default function WorldMap() {
         </div>
       </div>
 
-      {/* Кнопка полноэкранного режима */}
+      {/* Кнопка полноэкранного режима для Tiled карты */}
       {viewMode === 'tiled' && mapData && (
         <div className="flex justify-center mb-4">
           <button
             onClick={() => setIsFullscreen(true)}
-            className="px-6 py-3 bg-fantasy-gold hover:bg-yellow-500 text-black font-bold rounded-lg transition-colors shadow-lg"
+            className="px-8 py-4 bg-fantasy-gold hover:bg-yellow-500 text-black font-bold rounded-lg transition-colors shadow-lg text-lg"
           >
-            🔍 Полноэкранный обзор карты
+            🔍 Открыть карту в полноэкранном режиме
           </button>
         </div>
       )}
-
-      {/* Debug Component */}
-      <div className="mb-4">
-        <MapDebug />
-      </div>
 
       {/* Error Display */}
       {error && (
@@ -175,20 +165,6 @@ export default function WorldMap() {
               className="w-full"
             />
             
-            {/* Overlay с информацией о карте */}
-            {mapLoaded && (
-              <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
-                <p className="text-sm">
-                  <span className="text-fantasy-gold">Карта:</span> {mapData.width}×{mapData.height} тайлов
-                </p>
-                <p className="text-sm">
-                  <span className="text-fantasy-gold">Размер тайла:</span> {mapData.tilewidth}×{mapData.tileheight}px
-                </p>
-                <p className="text-sm">
-                  <span className="text-fantasy-gold">Слоев:</span> {mapData.layers.length}
-                </p>
-              </div>
-            )}
           </div>
         ) : viewMode === 'cities' ? (
           <div className="relative w-full h-96 md:h-[500px] bg-gradient-to-br from-green-900 via-blue-900 to-purple-900 rounded-lg overflow-hidden">

@@ -279,3 +279,66 @@ export interface Encounter {
   chance: number // 0-100
   data: any // specific to encounter type
 }
+
+// Hut System
+export interface Hut {
+  id: string
+  ownerId: number
+  ownerName: string
+  name: string
+  x: number // tile position
+  y: number // tile position
+  size: { width: number; height: number } // always 4x4
+  zone: HutZone
+  level: number
+  upgrades: HutUpgrade[]
+  resources: HutResources
+  lastVisited: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface HutZone {
+  id: string
+  name: string
+  emoji: string
+  description: string
+  basePrice: number
+  priceMultiplier: number // multiplier based on distance from center
+  maxHuts: number
+  coordinates: { x: number; y: number }
+  radius: number
+}
+
+export interface HutUpgrade {
+  id: string
+  name: string
+  type: 'storage' | 'defense' | 'decoration' | 'utility'
+  level: number
+  cost: number
+  effects: HutUpgradeEffect[]
+  description: string
+}
+
+export interface HutUpgradeEffect {
+  type: 'storage_capacity' | 'defense_bonus' | 'resource_generation' | 'visitor_bonus'
+  value: number
+}
+
+export interface HutResources {
+  wood: number
+  stone: number
+  metal: number
+  gems: number
+  food: number
+  maxStorage: number
+}
+
+export interface HutConstruction {
+  x: number
+  y: number
+  zone: HutZone
+  cost: number
+  canBuild: boolean
+  reason?: string // why can't build (collision, insufficient funds, etc.)
+}

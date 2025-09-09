@@ -80,7 +80,6 @@ export default function MainMenu({ user }: MainMenuProps) {
 
   return (
     <div className="min-h-screen">
-      <CryptoWallet />
       <Toaster 
         position="top-center"
         toastOptions={{
@@ -91,6 +90,11 @@ export default function MainMenu({ user }: MainMenuProps) {
           }
         }}
       />
+      
+      {/* Кошелек в верхней части */}
+      <div className="fixed top-4 right-4 z-50">
+        <CryptoWallet />
+      </div>
       
       {/* Header */}
       <div className="text-center py-12 relative overflow-hidden">
@@ -111,7 +115,7 @@ export default function MainMenu({ user }: MainMenuProps) {
           </p>
           
           {user && (
-            <div className="bg-gradient-to-r from-fantasy-dark-blue/80 to-fantasy-emerald-dark/80 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto border border-fantasy-gold/20">
+            <div className="bg-gradient-to-r from-fantasy-dark-blue/80 to-fantasy-emerald-dark/80 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto border border-fantasy-gold/20 mr-20">
               <h2 className="text-xl font-semibold mb-2 text-fantasy-gold">
                 🌟 Добро пожаловать, {user.first_name}!
               </h2>

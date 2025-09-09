@@ -13,7 +13,7 @@ interface GameState {
   characterExists: boolean
   
   // Game State
-  currentView: 'home' | 'character-creation' | 'game' | 'battle' | 'inventory' | 'map' | 'shop' | 'crafting'
+  currentView: 'home' | 'character-creation' | 'game' | 'battle' | 'inventory' | 'map' | 'shop' | 'crafting' | 'huts'
   selectedCity: string | null
   selectedLocation: string | null
   
