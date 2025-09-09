@@ -6,6 +6,7 @@ import { CITIES } from '@/lib/gameData'
 import { City } from '@/types/game'
 import CryptoWallet from './CryptoWallet'
 import TiledMapViewer from './TiledMapViewer'
+import FullscreenWorldMap from './FullscreenWorldMap'
 import { TiledMap } from '@/lib/tiledMapRenderer'
 import MapDebug from './MapDebug'
 
@@ -17,6 +18,7 @@ export default function WorldMap() {
   const [mapLoaded, setMapLoaded] = useState(false)
   const [viewMode, setViewMode] = useState<'tiled' | 'cities'>('tiled')
   const [error, setError] = useState<string | null>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   // Загружаем данные карты
   useEffect(() => {
@@ -80,9 +82,17 @@ export default function WorldMap() {
     )
   }
 
+  // Если открыт полноэкранный режим
+  if (isFullscreen) {
+    return <FullscreenWorldMap onClose={() => setIsFullscreen(false)} />
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 pr-0 sm:pr-24">
-      <CryptoWallet />
+      {/* Плоская кнопка кошелька в верхней части */}
+      <div className="mb-4">
+        <CryptoWallet variant="flat" />
+      </div>
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-2">
@@ -121,6 +131,18 @@ export default function WorldMap() {
           </button>
         </div>
       </div>
+
+      {/* Кнопка полноэкранного режима */}
+      {viewMode === 'tiled' && mapData && (
+        <div className="flex justify-center mb-4">
+          <button
+            onClick={() => setIsFullscreen(true)}
+            className="px-6 py-3 bg-fantasy-gold hover:bg-yellow-500 text-black font-bold rounded-lg transition-colors shadow-lg"
+          >
+            🔍 Полноэкранный обзор карты
+          </button>
+        </div>
+      )}
 
       {/* Debug Component */}
       <div className="mb-4">

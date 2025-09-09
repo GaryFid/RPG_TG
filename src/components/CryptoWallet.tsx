@@ -12,7 +12,11 @@ interface CryptoBalance {
   usdValue: number
 }
 
-export default function CryptoWallet() {
+interface CryptoWalletProps {
+  variant?: 'floating' | 'flat'
+}
+
+export default function CryptoWallet({ variant = 'floating' }: CryptoWalletProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { character } = useGameStore()
 
@@ -72,9 +76,135 @@ export default function CryptoWallet() {
     alert(`Вывод ${symbol} скоро будет доступно!`)
   }
 
+  if (variant === 'flat') {
+    return (
+      <div className="relative">
+        {/* Плоская кнопка кошелька */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-fantasy-gold/20 group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="text-2xl">💰</div>
+              <div className="text-left">
+                <div className="text-sm text-gray-200">Криптокошелек</div>
+                <div className="text-lg font-bold text-fantasy-gold">
+                  ${totalUsdValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                </div>
+              </div>
+            </div>
+            <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+              <svg className="w-5 h-5 text-fantasy-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </button>
+
+        {/* Dropdown Menu для плоской версии */}
+        {isOpen && (
+          <div className="absolute top-full left-0 right-0 z-40 mt-2 bg-gradient-to-br from-fantasy-dark-blue/95 to-fantasy-emerald-dark/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-fantasy-gold/20 p-6 animate-fade-in overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-fantasy-gold flex items-center">
+                💎 Криптокошелек
+              </h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Total Portfolio Value */}
+            <div className="bg-gradient-to-r from-fantasy-gold/20 to-yellow-400/20 rounded-xl p-4 mb-6 border border-fantasy-gold/30">
+              <div className="text-center">
+                <div className="text-sm text-gray-300 mb-1">Общая стоимость портфеля</div>
+                <div className="text-2xl font-bold text-fantasy-gold">
+                  ${totalUsdValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                </div>
+              </div>
+            </div>
+
+            {/* Crypto Balances */}
+            <div className="space-y-3 mb-6 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-fantasy-gold/30 scrollbar-track-transparent">
+              {cryptoBalances.map((crypto) => (
+                <div
+                  key={crypto.symbol}
+                  className="bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded-xl p-4 border border-gray-600/30 hover:border-fantasy-gold/30 transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="text-2xl">{crypto.icon}</div>
+                      <div>
+                        <div className="font-bold text-white">{crypto.symbol}</div>
+                        <div className="text-xs text-gray-400">{crypto.name}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`font-bold ${crypto.color}`}>
+                        {crypto.balance.toLocaleString('en-US', { maximumFractionDigits: 4 })}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        ${crypto.usdValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  setIsOpen(false)
+                  alert('Пополнение кошелька скоро будет доступно!')
+                }}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>💳</span>
+                <span>Пополнить</span>
+              </button>
+              <button
+                onClick={() => {
+                  setIsOpen(false)
+                  alert('Вывод средств скоро будет доступен!')
+                }}
+                className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>💸</span>
+                <span>Вывод</span>
+              </button>
+            </div>
+
+            {/* Footer Info */}
+            <div className="mt-4 text-center">
+              <div className="text-xs text-gray-400">
+                💡 Подключите Web3 кошелек для управления средствами
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Backdrop для плоской версии */}
+        {isOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="relative">
-      {/* Burger Menu Button */}
+      {/* Floating Burger Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-4 right-4 z-50 bg-gradient-to-r from-fantasy-blue-emerald to-blue-600 hover:from-blue-600 hover:to-fantasy-blue-emerald p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-fantasy-gold/20 group sm:block"

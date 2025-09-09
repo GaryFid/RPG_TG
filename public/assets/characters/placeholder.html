@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Character Sprites Placeholder</title>
+    <style>
+        body { 
+            background: #222; 
+            color: white; 
+            font-family: Arial, sans-serif; 
+            padding: 20px;
+        }
+        .sprite { 
+            width: 32px; 
+            height: 32px; 
+            background: #444; 
+            border: 2px solid #666; 
+            display: inline-block; 
+            margin: 10px;
+            position: relative;
+        }
+        .sprite::before {
+            content: attr(data-class);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .warrior { background: #8B4513; }
+        .mage { background: #4B0082; }
+        .archer { background: #228B22; }
+        .rogue { background: #2F4F4F; }
+    </style>
+</head>
+<body>
+    <h1>Character Sprites Placeholder</h1>
+    <p>These are placeholder sprites. Replace with actual character sprites from recommended sources.</p>
+    
+    <h2>Classes:</h2>
+    <div class="sprite warrior" data-class="W"></div>
+    <div class="sprite mage" data-class="M"></div>
+    <div class="sprite archer" data-class="A"></div>
+    <div class="sprite rogue" data-class="R"></div>
+    
+    <h2>Recommended Sources:</h2>
+    <ul>
+        <li><a href="https://opengameart.org" target="_blank">OpenGameArt.org</a></li>
+        <li><a href="https://itch.io" target="_blank">Itch.io</a></li>
+        <li><a href="https://kenney.nl" target="_blank">Kenney.nl</a></li>
+    </ul>
+    
+    <h2>File Structure:</h2>
+    <pre>
+public/assets/characters/
+├── classes/
+│   ├── warrior/
+│   │   ├── idle.png
+│   │   ├── walk.png
+│   │   ├── attack.png
+│   │   └── death.png
+│   ├── mage/
+│   │   ├── idle.png
+│   │   ├── walk.png
+│   │   ├── attack.png
+│   │   └── death.png
+│   ├── archer/
+│   │   ├── idle.png
+│   │   ├── walk.png
+│   │   ├── attack.png
+│   │   └── death.png
+│   └── rogue/
+│       ├── idle.png
+│       ├── walk.png
+│       ├── attack.png
+│       └── death.png
+├── npcs/
+│   ├── merchant.png
+│   ├── guard.png
+│   └── quest_giver.png
+└── enemies/
+    ├── goblin/
+    ├── orc/
+    └── dragon/
+    </pre>
+</body>
+</html>
