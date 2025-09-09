@@ -140,6 +140,7 @@ export default function CharacterSprite({
       {/* Спрайт персонажа */}
       <div className="relative">
         {isLoaded ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={character.sprite}
             alt={character.name}

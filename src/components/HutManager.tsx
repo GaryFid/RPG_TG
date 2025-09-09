@@ -13,9 +13,9 @@ export default function HutManager() {
   // Загружаем хижины персонажа
   useEffect(() => {
     loadPlayerHuts()
-  }, [character])
+  }, [character, loadPlayerHuts])
 
-  const loadPlayerHuts = async () => {
+  const loadPlayerHuts = useCallback(async () => {
     if (!character) return
 
     setIsLoading(true)
@@ -59,7 +59,7 @@ export default function HutManager() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [character])
 
   const handleUpgradeHut = async (hutId: string, upgrade: HutUpgrade) => {
     try {

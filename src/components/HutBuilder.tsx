@@ -70,9 +70,9 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
   // Загружаем существующие хижины
   useEffect(() => {
     loadHuts()
-  }, [])
+  }, [loadHuts])
 
-  const loadHuts = async () => {
+  const loadHuts = useCallback(async () => {
     try {
       // TODO: Загрузить хижины с сервера
       // const response = await fetch('/api/huts')
@@ -101,9 +101,9 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     } catch (error) {
       console.error('Failed to load huts:', error)
     }
-  }
+  }, [hutZones])
 
-  const getZoneForPosition = (x: number, y: number): HutZone | null => {
+  const getZoneForPosition = useCallback((x: number, y: number): HutZone | null => {
     const distanceFromCenter = Math.sqrt(
       Math.pow(x - mapWidth / 2, 2) + Math.pow(y - mapHeight / 2, 2)
     )
@@ -114,17 +114,17 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       }
     }
     return null
-  }
+  }, [mapWidth, mapHeight, hutZones])
 
-  const calculatePrice = (x: number, y: number, zone: HutZone): number => {
+  const calculatePrice = useCallback((x: number, y: number, zone: HutZone): number => {
     const distanceFromCenter = Math.sqrt(
       Math.pow(x - mapWidth / 2, 2) + Math.pow(y - mapHeight / 2, 2)
     )
     const distanceMultiplier = Math.max(0.1, 1 - (distanceFromCenter / zone.radius) * 0.9)
     return Math.floor(zone.basePrice * zone.priceMultiplier * distanceMultiplier)
-  }
+  }, [mapWidth, mapHeight])
 
-  const checkCollision = (x: number, y: number): boolean => {
+  const checkCollision = useCallback((x: number, y: number): boolean => {
     const hutSize = 4
     for (const hut of huts) {
       if (
@@ -137,7 +137,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       }
     }
     return false
-  }
+  }, [huts])
 
   const handleTileHover = useCallback((x: number, y: number) => {
     setHoveredTile({ x, y })
@@ -160,15 +160,15 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       canBuild: !hasCollision && canAfford,
       reason: hasCollision ? 'Занято другим игроком' : !canAfford ? 'Недостаточно золота' : undefined
     })
-  }, [character, huts, mapWidth, mapHeight])
+  }, [character, huts, mapWidth, mapHeight, getZoneForPosition, calculatePrice, checkCollision])
 
   const handleTileClick = useCallback((x: number, y: number) => {
     if (!construction || !construction.canBuild || !character) return
 
     buildHut(x, y, construction.zone, construction.cost)
-  }, [construction, character])
+  }, [construction, character, buildHut])
 
-  const buildHut = async (x: number, y: number, zone: HutZone, cost: number) => {
+  const buildHut = useCallback(async (x: number, y: number, zone: HutZone, cost: number) => {
     if (!character) return
 
     setIsBuilding(true)
@@ -214,7 +214,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     } finally {
       setIsBuilding(false)
     }
-  }
+  }, [character, onClose])
 
   if (!character) {
     return (

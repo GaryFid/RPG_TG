@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { createServerSupabaseClient } from '@/lib/supabase'
 
 // GET /api/huts/player/[userId] - Получить хижины конкретного игрока
 export async function GET(
@@ -13,7 +13,7 @@ export async function GET(
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
     
     const { data: huts, error } = await supabase
       .from('huts')
