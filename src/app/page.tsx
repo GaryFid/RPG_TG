@@ -253,8 +253,8 @@ function GameInterface({ character }: { character: any }) {
           onClick={() => setCurrentView('huts')}
           className="card hover:shadow-lg transition-all duration-300 cursor-pointer text-center p-6"
         >
-          <div className="text-4xl mb-2">🏠</div>
-          <h3 className="text-lg font-semibold text-fantasy-gold mb-1">Хижины</h3>
+          <div className="text-4xl mb-2">👑</div>
+          <h3 className="text-lg font-semibold text-fantasy-gold mb-1">Королевства</h3>
           <p className="text-sm text-gray-400">Управляй владениями</p>
         </button>
 

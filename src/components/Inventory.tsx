@@ -21,9 +21,10 @@ interface InventoryItem {
 }
 
 export default function Inventory() {
-  const { character, setCurrentView } = useGameStore()
+  const { character, setCurrentView: setGameView } = useGameStore()
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null)
   const [filter, setFilter] = useState<'all' | 'weapon' | 'armor' | 'consumable' | 'misc'>('all')
+  const [currentView, setCurrentView] = useState<'inventory' | 'shop'>('inventory')
 
   // Моковые данные инвентаря
   const inventoryItems: InventoryItem[] = [
@@ -89,9 +90,85 @@ export default function Inventory() {
     }
   ]
 
-  const filteredItems = inventoryItems.filter(item => 
+  // Товары в магазине
+  const shopItems: InventoryItem[] = [
+    {
+      id: 'iron_sword',
+      name: 'Железный меч',
+      type: 'weapon',
+      rarity: 'uncommon',
+      value: 300,
+      description: 'Качественный железный меч. Острый и надежный.',
+      icon: '⚔️',
+      stats: { attack: 25 }
+    },
+    {
+      id: 'leather_armor',
+      name: 'Кожаная броня',
+      type: 'armor',
+      rarity: 'common',
+      value: 200,
+      description: 'Легкая кожаная броня. Обеспечивает базовую защиту.',
+      icon: '🦺',
+      stats: { defense: 15 }
+    },
+    {
+      id: 'health_potion',
+      name: 'Большое зелье лечения',
+      type: 'consumable',
+      rarity: 'uncommon',
+      value: 50,
+      description: 'Восстанавливает 100 единиц здоровья.',
+      icon: '🧪',
+      quantity: 10,
+      stats: { health: 100 }
+    },
+    {
+      id: 'magic_staff',
+      name: 'Волшебный посох',
+      type: 'weapon',
+      rarity: 'epic',
+      value: 800,
+      description: 'Мощный посох, пропитанный древней магией.',
+      icon: '🔮',
+      stats: { mana: 50, attack: 15 }
+    },
+    {
+      id: 'steel_helmet',
+      name: 'Стальной шлем',
+      type: 'armor',
+      rarity: 'uncommon',
+      value: 250,
+      description: 'Прочный стальной шлем. Защищает голову от ударов.',
+      icon: '⛑️',
+      stats: { defense: 18 }
+    },
+    {
+      id: 'diamond',
+      name: 'Алмаз',
+      type: 'misc',
+      rarity: 'legendary',
+      value: 2000,
+      description: 'Редчайший алмаз невероятной чистоты.',
+      icon: '💎'
+    }
+  ]
+
+  const filteredItems = (currentView === 'inventory' ? inventoryItems : shopItems).filter(item => 
     filter === 'all' || item.type === filter
   )
+
+  const handleBuyItem = (item: InventoryItem) => {
+    if (!character || character.gold < item.value) {
+      alert('Недостаточно золота!')
+      return
+    }
+    
+    if (confirm(`Купить ${item.name} за ${item.value} золота?`)) {
+      alert(`Куплено: ${item.name} за ${item.value} золота`)
+      // TODO: Implement buying logic
+    }
+  }
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -144,15 +221,41 @@ export default function Inventory() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-2">
-          🎒 Инвентарь
+          {currentView === 'inventory' ? '🎒 Инвентарь' : '🏪 Магазин'}
         </h1>
         <p className="text-gray-300">
-          Управление предметами персонажа
+          {currentView === 'inventory' ? 'Управление предметами персонажа' : 'Покупка снаряжения и предметов'}
         </p>
+      </div>
+
+      {/* Переключатель */}
+      <div className="flex justify-center mb-6">
+        <div className="bg-gray-700 rounded-lg p-1 flex">
+          <button
+            onClick={() => setCurrentView('inventory')}
+            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+              currentView === 'inventory'
+                ? 'bg-fantasy-gold text-black'
+                : 'text-gray-300 hover:text-white'
+            }`}
+          >
+            🎒 Инвентарь
+          </button>
+          <button
+            onClick={() => setCurrentView('shop')}
+            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+              currentView === 'shop'
+                ? 'bg-fantasy-gold text-black'
+                : 'text-gray-300 hover:text-white'
+            }`}
+          >
+            🏪 Магазин
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -213,7 +316,7 @@ export default function Inventory() {
           </div>
 
           {/* Сетка предметов */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredItems.map((item) => (
               <div
                 key={item.id}
@@ -308,18 +411,29 @@ export default function Inventory() {
               </div>
 
               <div className="space-y-2">
-                <button
-                  onClick={() => handleUseItem(selectedItem)}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors"
-                >
-                  Использовать
-                </button>
-                <button
-                  onClick={() => handleSellItem(selectedItem)}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
-                >
-                  Продать
-                </button>
+                {currentView === 'inventory' ? (
+                  <>
+                    <button
+                      onClick={() => handleUseItem(selectedItem)}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors"
+                    >
+                      Использовать
+                    </button>
+                    <button
+                      onClick={() => handleSellItem(selectedItem)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors"
+                    >
+                      Продать
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => handleBuyItem(selectedItem)}
+                    className="w-full bg-fantasy-gold hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded transition-colors"
+                  >
+                    💰 Купить за {selectedItem.value} золота
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -336,7 +450,7 @@ export default function Inventory() {
       {/* Кнопка возврата */}
       <div className="mt-6 text-center">
         <button
-          onClick={() => setCurrentView('game')}
+          onClick={() => setGameView('game')}
           className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors"
         >
           ← Вернуться в игру

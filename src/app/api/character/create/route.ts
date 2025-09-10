@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       health: 100 + (bonuses.vitality * 5),
       max_mana: 50 + (bonuses.intelligence * 2),
       mana: 50 + (bonuses.intelligence * 2),
-      gold: 100,
+      gold: 1500,
       current_city: 'kingdom_capital',
       equipment: {},
       inventory: [],

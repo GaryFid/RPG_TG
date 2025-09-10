@@ -177,7 +177,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       // Обновляем золото персонажа
       // TODO: Обновить через API
       
-      alert(`Хижина построена за ${cost} золота!`)
+      alert(`Королевство основано за ${cost} золота!`)
       onClose()
     } catch (error) {
       console.error('Failed to build hut:', error)
@@ -232,7 +232,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-600">
           <h2 className="text-2xl font-bold text-fantasy-gold">
-            🏠 Строительство хижины
+            👑 Строительство королевства
           </h2>
           <button
             onClick={onClose}
@@ -311,7 +311,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                       disabled={isBuilding}
                       className="w-full mt-2 bg-fantasy-gold hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded transition-colors disabled:opacity-50"
                     >
-                      {isBuilding ? 'Строим...' : 'Построить хижину'}
+                      {isBuilding ? 'Основываем...' : '👑 Основать королевство'}
                     </button>
                   )}
                 </div>
@@ -327,32 +327,52 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                   <li>• Наведите курсор на карту</li>
                   <li>• Зеленая область - можно строить</li>
                   <li>• Красная область - занято</li>
-                  <li>• Размер хижины: 4×4 тайла</li>
+                  <li>• Размер королевства: 4×4 тайла</li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Правая панель - карта */}
+              {/* Правая панель - карта */}
           <div className="flex-1 p-4">
             <div className="relative w-full h-full bg-gray-900 rounded-lg overflow-hidden">
               {/* Мини-карта для выбора позиции */}
               <div className="w-full h-full relative">
-                {/* Сетка */}
-                <div className="absolute inset-0 opacity-20">
-                  {Array.from({ length: Math.ceil(mapHeight / 20) }).map((_, row) =>
-                    Array.from({ length: Math.ceil(mapWidth / 20) }).map((_, col) => (
-                      <div
-                        key={`${row}-${col}`}
-                        className="absolute w-5 h-5 border border-gray-600"
-                        style={{
-                          left: col * 20,
-                          top: row * 20
-                        }}
-                        onMouseEnter={() => handleTileHover(col * 20, row * 20)}
-                        onClick={() => handleTileClick(col * 20, row * 20)}
-                      />
-                    ))
+                {/* Зональная раскраска */}
+                <div className="absolute inset-0">
+                  {Array.from({ length: Math.ceil(mapHeight / 10) }).map((_, row) =>
+                    Array.from({ length: Math.ceil(mapWidth / 10) }).map((_, col) => {
+                      const x = col * 10
+                      const y = row * 10
+                      const zone = getZoneForPosition(x, y)
+                      const distanceFromCenter = Math.sqrt(
+                        Math.pow(x - mapWidth / 2, 2) + Math.pow(y - mapHeight / 2, 2)
+                      )
+                      const maxDistance = Math.sqrt(Math.pow(mapWidth / 2, 2) + Math.pow(mapHeight / 2, 2))
+                      const normalizedDistance = Math.min(distanceFromCenter / maxDistance, 1)
+                      
+                      // Цвет от зеленого (дешево, далеко) до красного (дорого, близко к центру)
+                      const red = Math.floor(normalizedDistance * 100 + 155)
+                      const green = Math.floor((1 - normalizedDistance) * 100 + 155)
+                      const blue = 50
+                      
+                      return (
+                        <div
+                          key={`${row}-${col}`}
+                          className="absolute opacity-30 hover:opacity-50 transition-opacity cursor-pointer"
+                          style={{
+                            left: x,
+                            top: y,
+                            width: 10,
+                            height: 10,
+                            backgroundColor: `rgb(${red}, ${green}, ${blue})`,
+                            border: zone ? `1px solid ${zone.emoji === '🏰' ? '#FFD700' : '#666'}` : '1px solid #333'
+                          }}
+                          onMouseEnter={() => handleTileHover(x, y)}
+                          onClick={() => handleTileClick(x, y)}
+                        />
+                      )
+                    })
                   )}
                 </div>
 

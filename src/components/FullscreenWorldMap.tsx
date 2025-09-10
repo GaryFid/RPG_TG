@@ -154,13 +154,13 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
         </div>
         
         <div className="flex items-center space-x-2">
-          {/* Кнопка строительства хижин */}
+          {/* Кнопка строительства королевства */}
           <button
             onClick={() => setShowHutBuilder(true)}
             className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-white text-sm"
-            title="Построить хижину"
+            title="Основать королевство"
           >
-            🏠 Строить
+            👑 Строить
           </button>
           
           {/* Кнопка сброса */}

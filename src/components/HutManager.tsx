@@ -106,7 +106,7 @@ export default function HutManager() {
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-2">
-          🏠 Мои хижины
+          👑 Мои королевства
         </h1>
         <p className="text-gray-300">
           Управление вашими владениями
@@ -117,10 +117,10 @@ export default function HutManager() {
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🏗️</div>
           <h2 className="text-2xl font-bold text-fantasy-gold mb-4">
-            У вас пока нет хижин
+            У вас пока нет королевств
           </h2>
           <p className="text-gray-400 mb-6">
-            Постройте свою первую хижину на карте мира
+            Основайте свое первое королевство на карте мира
           </p>
           <button
             onClick={() => setCurrentView('map')}
@@ -134,7 +134,7 @@ export default function HutManager() {
           {/* Список хижин */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-white mb-4">
-              Ваши хижины ({huts.length})
+              Ваши королевства ({huts.length})
             </h2>
             {huts.map((hut) => (
               <div
@@ -257,13 +257,13 @@ export default function HutManager() {
                     onClick={() => handleVisitHut(selectedHut)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
                   >
-                    🗺️ Посетить хижину
+                    🗺️ Посетить королевство
                   </button>
                   <button
                     onClick={() => alert('Улучшения скоро будут доступны!')}
                     className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors"
                   >
-                    ⚡ Улучшить хижину
+                    ⚡ Развивать королевство
                   </button>
                 </div>
               </div>
