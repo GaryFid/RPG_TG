@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useGameStore } from '@/stores/gameStore'
 import { Hut, HutUpgrade } from '@/types/game'
 
@@ -9,11 +9,6 @@ export default function HutManager() {
   const [huts, setHuts] = useState<Hut[]>([])
   const [selectedHut, setSelectedHut] = useState<Hut | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-
-  // Загружаем хижины персонажа
-  useEffect(() => {
-    loadPlayerHuts()
-  }, [character, loadPlayerHuts])
 
   const loadPlayerHuts = useCallback(async () => {
     if (!character) return
@@ -60,6 +55,11 @@ export default function HutManager() {
       setIsLoading(false)
     }
   }, [character])
+
+  // Загружаем хижины персонажа
+  useEffect(() => {
+    loadPlayerHuts()
+  }, [loadPlayerHuts])
 
   const handleUpgradeHut = async (hutId: string, upgrade: HutUpgrade) => {
     try {
