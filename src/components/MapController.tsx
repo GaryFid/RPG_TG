@@ -88,53 +88,6 @@ export default function MapController({
         tileSize={tileSize}
       />
 
-      {/* Элементы управления */}
-      <div className="absolute bottom-4 right-4 flex flex-col gap-2">
-        {/* Кнопки направления */}
-        <div className="grid grid-cols-3 gap-1">
-          <div></div>
-          <button
-            onClick={() => movePlayer(0, -1)}
-            disabled={isMoving}
-            className="w-10 h-10 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded-lg flex items-center justify-center text-white"
-          >
-            ↑
-          </button>
-          <div></div>
-          
-          <button
-            onClick={() => movePlayer(-1, 0)}
-            disabled={isMoving}
-            className="w-10 h-10 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded-lg flex items-center justify-center text-white"
-          >
-            ←
-          </button>
-          <div className="w-10 h-10"></div>
-          <button
-            onClick={() => movePlayer(1, 0)}
-            disabled={isMoving}
-            className="w-10 h-10 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded-lg flex items-center justify-center text-white"
-          >
-            →
-          </button>
-          
-          <div></div>
-          <button
-            onClick={() => movePlayer(0, 1)}
-            disabled={isMoving}
-            className="w-10 h-10 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded-lg flex items-center justify-center text-white"
-          >
-            ↓
-          </button>
-          <div></div>
-        </div>
-
-        {/* Информация о позиции */}
-        <div className="bg-black bg-opacity-50 text-white text-xs p-2 rounded">
-          <div>Позиция: {playerX}, {playerY}</div>
-          <div className="text-gray-300">Используйте WASD или стрелки</div>
-        </div>
-      </div>
     </div>
   )
 }

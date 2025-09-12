@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useGameStore } from '@/stores/gameStore'
+import CryptoWallet from './CryptoWallet'
 
 interface InventoryItem {
   id: string
@@ -222,6 +223,8 @@ export default function Inventory() {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
+      {/* Кошелек - показывается только в магазине */}
+      {currentView === 'shop' && <CryptoWallet />}
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-fantasy-gold mb-2">

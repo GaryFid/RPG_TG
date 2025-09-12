@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useGameStore } from '@/stores/gameStore'
-import { Hut, HutZone, HutConstruction } from '@/types/game'
+import { Hut, HutZone, HutConstruction, CastleType } from '@/types/game'
 
 interface HutBuilderProps {
   onClose: () => void
@@ -18,6 +18,47 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
   const [construction, setConstruction] = useState<HutConstruction | null>(null)
   const [huts, setHuts] = useState<Hut[]>([])
   const [isBuilding, setIsBuilding] = useState(false)
+  const [selectedCastleType, setSelectedCastleType] = useState<CastleType | null>(null)
+
+  // Доступные типы замков
+  const castleTypes: CastleType[] = useMemo(() => [
+    {
+      id: 'wooden_castle',
+      name: 'Деревянный замок',
+      emoji: '🏰',
+      description: 'Простой деревянный замок. Быстро строится и дешевый в обслуживании.',
+      basePrice: 500,
+      bonuses: {
+        production: 10,
+        defense: 5,
+        capacity: 100
+      }
+    },
+    {
+      id: 'stone_castle',
+      name: 'Каменный замок',
+      emoji: '🏛️',
+      description: 'Прочный каменный замок с высокой защитой.',
+      basePrice: 1000,
+      bonuses: {
+        production: 15,
+        defense: 20,
+        capacity: 200
+      }
+    },
+    {
+      id: 'magic_castle',
+      name: 'Магический замок',
+      emoji: '✨',
+      description: 'Замок, пропитанный магией. Увеличивает производство ресурсов.',
+      basePrice: 1500,
+      bonuses: {
+        production: 30,
+        defense: 15,
+        capacity: 150
+      }
+    }
+  ], [])
 
   // Зоны для строительства
   const hutZones: HutZone[] = useMemo(() => [
@@ -85,6 +126,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
           y: 50,
           size: { width: 4, height: 4 },
           zone: hutZones[1],
+          castleType: castleTypes[0], // Деревянный замок по умолчанию
           level: 1,
           upgrades: [],
           resources: { wood: 100, stone: 50, metal: 25, gems: 5, food: 200, maxStorage: 1000 },
@@ -96,7 +138,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     } catch (error) {
       console.error('Failed to load huts:', error)
     }
-  }, [hutZones])
+  }, [hutZones, castleTypes])
 
   // Загружаем существующие хижины
   useEffect(() => {
@@ -116,12 +158,15 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     return null
   }, [mapWidth, mapHeight, hutZones])
 
-  const calculatePrice = useCallback((x: number, y: number, zone: HutZone): number => {
+  const calculatePrice = useCallback((x: number, y: number, zone: HutZone, castleType?: CastleType): number => {
     const distanceFromCenter = Math.sqrt(
       Math.pow(x - mapWidth / 2, 2) + Math.pow(y - mapHeight / 2, 2)
     )
     const distanceMultiplier = Math.max(0.1, 1 - (distanceFromCenter / zone.radius) * 0.9)
-    return Math.floor(zone.basePrice * zone.priceMultiplier * distanceMultiplier)
+    const basePrice = zone.basePrice * zone.priceMultiplier * distanceMultiplier
+    const castlePrice = castleType ? castleType.basePrice : 0
+    
+    return Math.floor(basePrice + castlePrice)
   }, [mapWidth, mapHeight])
 
   const checkCollision = useCallback((x: number, y: number): boolean => {
@@ -139,31 +184,22 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     return false
   }, [huts])
 
-  const buildHut = useCallback(async (x: number, y: number, zone: HutZone, cost: number) => {
+  const buildHut = useCallback(async (x: number, y: number, zone: HutZone, castleType: CastleType, cost: number) => {
     if (!character) return
 
     setIsBuilding(true)
     try {
-      // TODO: Отправить запрос на сервер для строительства хижины
-      // const response = await fetch('/api/huts/build', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     x, y, zone: zone.id, cost,
-      //     characterId: character.id
-      //   })
-      // })
-
       // Моковое строительство
       const newHut: Hut = {
         id: `hut_${Date.now()}`,
         ownerId: character.userId,
         ownerName: character.name,
-        name: `${character.name}'s Hut`,
+        name: `${castleType.name} ${character.name}`,
         x,
         y,
         size: { width: 4, height: 4 },
         zone,
+        castleType,
         level: 1,
         upgrades: [],
         resources: { wood: 0, stone: 0, metal: 0, gems: 0, food: 0, maxStorage: 1000 },
@@ -177,11 +213,11 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       // Обновляем золото персонажа
       // TODO: Обновить через API
       
-      alert(`Королевство основано за ${cost} золота!`)
+      alert(`${castleType.name} основан за ${cost} золота!`)
       onClose()
     } catch (error) {
       console.error('Failed to build hut:', error)
-      alert('Ошибка строительства хижины')
+      alert('Ошибка строительства замка')
     } finally {
       setIsBuilding(false)
     }
@@ -191,12 +227,12 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     setHoveredTile({ x, y })
     
     const zone = getZoneForPosition(x, y)
-    if (!zone) {
+    if (!zone || !selectedCastleType) {
       setConstruction(null)
       return
     }
 
-    const cost = calculatePrice(x, y, zone)
+    const cost = calculatePrice(x, y, zone, selectedCastleType)
     const hasCollision = checkCollision(x, y)
     const canAfford = character ? character.gold >= cost : false
 
@@ -208,13 +244,13 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       canBuild: !hasCollision && canAfford,
       reason: hasCollision ? 'Занято другим игроком' : !canAfford ? 'Недостаточно золота' : undefined
     })
-  }, [character, getZoneForPosition, calculatePrice, checkCollision])
+  }, [character, getZoneForPosition, calculatePrice, checkCollision, selectedCastleType])
 
   const handleTileClick = useCallback((x: number, y: number) => {
-    if (!construction || !construction.canBuild || !character) return
+    if (!construction || !construction.canBuild || !character || !selectedCastleType) return
 
-    buildHut(x, y, construction.zone, construction.cost)
-  }, [construction, character, buildHut])
+    buildHut(x, y, construction.zone, selectedCastleType, construction.cost)
+  }, [construction, character, selectedCastleType, buildHut])
 
   if (!character) {
     return (
@@ -254,6 +290,42 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                 <p className="text-sm text-gray-300">
                   Золото: <span className="text-fantasy-gold font-bold">{character.gold}</span>
                 </p>
+              </div>
+
+              {/* Выбор типа замка */}
+              <div className="bg-gray-700 rounded-lg p-3">
+                <h3 className="text-lg font-semibold text-fantasy-gold mb-3">
+                  🏰 Выберите тип замка
+                </h3>
+                <div className="space-y-2">
+                  {castleTypes.map((castle) => (
+                    <div
+                      key={castle.id}
+                      onClick={() => setSelectedCastleType(castle)}
+                      className={`p-3 rounded-lg cursor-pointer transition-all ${
+                        selectedCastleType?.id === castle.id
+                          ? 'bg-fantasy-gold text-black'
+                          : 'bg-gray-600 hover:bg-gray-500 text-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center">
+                          <span className="text-lg mr-2">{castle.emoji}</span>
+                          <span className="font-semibold text-sm">{castle.name}</span>
+                        </div>
+                        <span className="text-xs font-bold">
+                          {castle.basePrice} 💰
+                        </span>
+                      </div>
+                      <p className="text-xs opacity-75 mb-2">{castle.description}</p>
+                      <div className="flex space-x-2 text-xs">
+                        <span>⚡{castle.bonuses.production}</span>
+                        <span>🛡️{castle.bonuses.defense}</span>
+                        <span>📦{castle.bonuses.capacity}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Зоны строительства */}
@@ -305,14 +377,19 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                       {construction.reason}
                     </p>
                   )}
-                  {construction.canBuild && (
+                  {construction.canBuild && selectedCastleType && (
                     <button
                       onClick={() => handleTileClick(construction.x, construction.y)}
                       disabled={isBuilding}
                       className="w-full mt-2 bg-fantasy-gold hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded transition-colors disabled:opacity-50"
                     >
-                      {isBuilding ? 'Основываем...' : '👑 Основать королевство'}
+                      {isBuilding ? 'Основываем...' : `${selectedCastleType.emoji} Построить ${selectedCastleType.name}`}
                     </button>
+                  )}
+                  {!selectedCastleType && (
+                    <p className="text-sm text-yellow-400 mt-2">
+                      Выберите тип замка
+                    </p>
                   )}
                 </div>
               )}
@@ -380,15 +457,19 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                 {huts.map((hut) => (
                   <div
                     key={hut.id}
-                    className="absolute bg-red-500 bg-opacity-70 border border-red-400"
+                    className="absolute bg-red-500 bg-opacity-70 border border-red-400 flex items-center justify-center"
                     style={{
                       left: (hut.x / mapWidth) * 100 + '%',
                       top: (hut.y / mapHeight) * 100 + '%',
                       width: (hut.size.width / mapWidth) * 100 + '%',
                       height: (hut.size.height / mapHeight) * 100 + '%'
                     }}
-                    title={`${hut.ownerName}'s Hut`}
-                  />
+                    title={`${hut.ownerName} - ${hut.name}`}
+                  >
+                    <div className="text-white text-xl">
+                      {hut.castleType?.emoji || '🏠'}
+                    </div>
+                  </div>
                 ))}
 
                 {/* Предварительный просмотр строительства */}

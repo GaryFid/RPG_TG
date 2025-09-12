@@ -280,6 +280,21 @@ export interface Encounter {
   data: any // specific to encounter type
 }
 
+// Castle Types
+export interface CastleType {
+  id: string
+  name: string
+  emoji: string
+  description: string
+  basePrice: number
+  image?: string // путь к изображению
+  bonuses: {
+    production?: number
+    defense?: number
+    capacity?: number
+  }
+}
+
 // Hut System
 export interface Hut {
   id: string
@@ -290,6 +305,7 @@ export interface Hut {
   y: number // tile position
   size: { width: number; height: number } // always 4x4
   zone: HutZone
+  castleType: CastleType // тип замка
   level: number
   upgrades: HutUpgrade[]
   resources: HutResources

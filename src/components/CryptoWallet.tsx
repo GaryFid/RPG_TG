@@ -14,9 +14,10 @@ interface CryptoBalance {
 
 interface CryptoWalletProps {
   variant?: 'floating' | 'flat'
+  showOnlyInShop?: boolean
 }
 
-export default function CryptoWallet({ variant = 'floating' }: CryptoWalletProps) {
+export default function CryptoWallet({ variant = 'floating', showOnlyInShop = false }: CryptoWalletProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { character } = useGameStore()
 

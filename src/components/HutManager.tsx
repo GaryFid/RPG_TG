@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useGameStore } from '@/stores/gameStore'
-import { Hut, HutUpgrade } from '@/types/game'
+import { Hut, HutUpgrade, CastleType } from '@/types/game'
 
 export default function HutManager() {
   const { character, setCurrentView } = useGameStore()
@@ -21,6 +21,15 @@ export default function HutManager() {
       // setHuts(data.huts)
       
       // Моковые данные
+      const defaultCastleType: CastleType = {
+        id: 'wooden_castle',
+        name: 'Деревянный замок',
+        emoji: '🏰',
+        description: 'Простой деревянный замок',
+        basePrice: 500,
+        bonuses: { production: 10, defense: 5, capacity: 100 }
+      }
+
       setHuts([
         {
           id: 'hut_1',
@@ -41,6 +50,7 @@ export default function HutManager() {
             coordinates: { x: 100, y: 100 },
             radius: 100
           },
+          castleType: defaultCastleType,
           level: 1,
           upgrades: [],
           resources: { wood: 150, stone: 75, metal: 30, gems: 8, food: 300, maxStorage: 1000 },
@@ -158,7 +168,7 @@ export default function HutManager() {
                       Позиция: ({hut.x}, {hut.y})
                     </p>
                   </div>
-                  <div className="text-2xl">{hut.zone.emoji}</div>
+                  <div className="text-2xl">{hut.castleType.emoji}</div>
                 </div>
               </div>
             ))}
@@ -169,10 +179,11 @@ export default function HutManager() {
             {selectedHut ? (
               <div className="bg-gray-800 rounded-lg p-6">
                 <div className="text-center mb-6">
-                  <div className="text-4xl mb-2">{selectedHut.zone.emoji}</div>
+                  <div className="text-4xl mb-2">{selectedHut.castleType.emoji}</div>
                   <h2 className="text-2xl font-bold text-fantasy-gold">
                     {selectedHut.name}
                   </h2>
+                  <p className="text-sm text-gray-400">{selectedHut.castleType.name}</p>
                   <p className="text-gray-400">
                     {selectedHut.zone.name} • Уровень {selectedHut.level}
                   </p>

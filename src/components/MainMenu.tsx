@@ -91,10 +91,6 @@ export default function MainMenu({ user }: MainMenuProps) {
         }}
       />
       
-      {/* Кошелек в верхней части */}
-      <div className="fixed top-4 right-4 z-50">
-        <CryptoWallet />
-      </div>
       
       {/* Header */}
       <div className="text-center py-12 relative overflow-hidden">
