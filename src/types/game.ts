@@ -296,6 +296,160 @@ export interface CastleType {
   }
 }
 
+// Castle Buildings System
+export interface CastleBuilding {
+  id: string
+  type: BuildingType
+  name: string
+  emoji: string
+  description: string
+  level: number
+  maxLevel: number
+  x: number
+  y: number
+  width: number
+  height: number
+  cost: {
+    wood?: number
+    stone?: number
+    iron?: number
+    gold?: number
+    diamonds?: number
+  }
+  upgradeCost: {
+    wood?: number
+    stone?: number
+    iron?: number
+    gold?: number
+    diamonds?: number
+  }
+  production?: {
+    resourceType: ResourceType
+    amount: number
+    interval: number // в секундах (24 часа = 86400)
+    lastCollected: Date
+  }
+  requirements?: {
+    level?: number
+    buildings?: { type: BuildingType; level: number }[]
+  }
+  stats?: {
+    attack?: number
+    defense?: number
+    capacity?: number
+    training?: number
+  }
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type BuildingType = 
+  | 'main_castle'      // Главный замок
+  | 'lumber_mill'      // Лесопилка
+  | 'stone_quarry'     // Каменоломня  
+  | 'iron_mine'        // Железная шахта
+  | 'gold_mine'        // Золотая шахта
+  | 'farm'             // Ферма
+  | 'barracks'         // Казармы
+  | 'archery_range'    // Лучники
+  | 'stable'           // Конюшня
+  | 'magic_tower'      // Башня магии
+  | 'library'          // Библиотека
+  | 'workshop'         // Мастерская
+  | 'wall'             // Стена
+  | 'gate'             // Ворота
+  | 'watchtower'       // Сторожевая башня
+  | 'market'           // Рынок
+  | 'temple'           // Храм
+  | 'tavern'           // Таверна
+
+export type ResourceType = 'wood' | 'stone' | 'iron' | 'gold' | 'food' | 'mana'
+
+// Army System
+export interface Unit {
+  id: string
+  type: UnitType
+  name: string
+  emoji: string
+  level: number
+  count: number
+  stats: {
+    attack: number
+    defense: number
+    health: number
+    speed: number
+  }
+  cost: {
+    wood?: number
+    stone?: number
+    iron?: number
+    gold?: number
+    food?: number
+  }
+  trainingTime: number // в секундах
+  requirements?: {
+    building: BuildingType
+    buildingLevel: number
+  }
+}
+
+export type UnitType = 
+  | 'warrior'    // Воин
+  | 'archer'     // Лучник
+  | 'knight'     // Рыцарь
+  | 'mage'       // Маг
+  | 'scout'      // Разведчик
+  | 'catapult'   // Катапульта
+
+// Magic System
+export interface Spell {
+  id: string
+  name: string
+  emoji: string
+  description: string
+  level: number
+  maxLevel: number
+  type: SpellType
+  cost: {
+    mana: number
+    gold?: number
+    reagents?: { id: string; quantity: number }[]
+  }
+  cooldown: number // в секундах
+  effect: {
+    type: 'damage' | 'heal' | 'buff' | 'debuff' | 'utility'
+    value: number
+    duration?: number
+    target: 'self' | 'ally' | 'enemy' | 'area'
+  }
+  requirements: {
+    level: number
+    building?: { type: BuildingType; level: number }
+    spells?: string[] // prerequisite spells
+  }
+}
+
+export type SpellType = 'combat' | 'support' | 'production' | 'defense'
+
+// World Races System
+export interface RaceWorld {
+  id: string
+  race: Race
+  name: string
+  emoji: string
+  description: string
+  environment: string
+  unlockLevel: number
+  isUnlocked: boolean
+  mapData?: any // Tiled map data
+  specialResources: ResourceType[]
+  bonuses: {
+    production?: { [key in ResourceType]?: number }
+    combat?: { attack?: number; defense?: number }
+    magic?: { mana?: number; spellPower?: number }
+  }
+}
+
 // Hut System
 export interface Hut {
   id: string

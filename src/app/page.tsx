@@ -7,6 +7,7 @@ import WorldMap from '@/components/WorldMap'
 import CityShop from '@/components/CityShop'
 import Inventory from '@/components/Inventory'
 import HutManager from '@/components/HutManager'
+import CraftingSystem from '@/components/CraftingSystem'
 import MainMenu from '@/components/MainMenu'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -119,6 +120,7 @@ export default function Home() {
         {currentView === 'shop' && <CityShop />}
         {currentView === 'inventory' && <Inventory />}
         {currentView === 'huts' && <HutManager />}
+        {currentView === 'crafting' && <CraftingSystem />}
         {/* Add other views as needed */}
       </div>
     )
@@ -256,8 +258,8 @@ function GameInterface({ character }: { character: any }) {
         </button>
 
         <button 
-          onClick={() => alert('Крафт скоро!')}
-          className="card hover:shadow-lg transition-all duration-300 cursor-pointer text-center p-6 opacity-75"
+          onClick={() => setCurrentView('crafting')}
+          className="card hover:shadow-lg transition-all duration-300 cursor-pointer text-center p-6"
         >
           <div className="text-4xl mb-2">🔨</div>
           <h3 className="text-lg font-semibold text-fantasy-gold mb-1">Крафт</h3>
