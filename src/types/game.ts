@@ -28,6 +28,7 @@ export interface Character {
   intelligence: number
   vitality: number
   gold: number
+  diamonds: number
   current_city: string
   equipment: Equipment
   inventory: InventoryItem[]

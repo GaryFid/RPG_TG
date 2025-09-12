@@ -9,56 +9,16 @@ interface HutBuilderProps {
   mapWidth: number
   mapHeight: number
   tileSize: number
+  selectedCastleType: CastleType
 }
 
-export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: HutBuilderProps) {
+export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize, selectedCastleType }: HutBuilderProps) {
   const { character } = useGameStore()
   const [selectedZone, setSelectedZone] = useState<HutZone | null>(null)
   const [hoveredTile, setHoveredTile] = useState<{ x: number; y: number } | null>(null)
   const [construction, setConstruction] = useState<HutConstruction | null>(null)
   const [huts, setHuts] = useState<Hut[]>([])
   const [isBuilding, setIsBuilding] = useState(false)
-  const [selectedCastleType, setSelectedCastleType] = useState<CastleType | null>(null)
-
-  // Доступные типы замков
-  const castleTypes: CastleType[] = useMemo(() => [
-    {
-      id: 'wooden_castle',
-      name: 'Деревянный замок',
-      emoji: '🏰',
-      description: 'Простой деревянный замок. Быстро строится и дешевый в обслуживании.',
-      basePrice: 500,
-      bonuses: {
-        production: 10,
-        defense: 5,
-        capacity: 100
-      }
-    },
-    {
-      id: 'stone_castle',
-      name: 'Каменный замок',
-      emoji: '🏛️',
-      description: 'Прочный каменный замок с высокой защитой.',
-      basePrice: 1000,
-      bonuses: {
-        production: 15,
-        defense: 20,
-        capacity: 200
-      }
-    },
-    {
-      id: 'magic_castle',
-      name: 'Магический замок',
-      emoji: '✨',
-      description: 'Замок, пропитанный магией. Увеличивает производство ресурсов.',
-      basePrice: 1500,
-      bonuses: {
-        production: 30,
-        defense: 15,
-        capacity: 150
-      }
-    }
-  ], [])
 
   // Зоны для строительства
   const hutZones: HutZone[] = useMemo(() => [
@@ -126,7 +86,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
           y: 50,
           size: { width: 4, height: 4 },
           zone: hutZones[1],
-          castleType: castleTypes[0], // Деревянный замок по умолчанию
+          castleType: selectedCastleType, // Используем выбранный тип замка
           level: 1,
           upgrades: [],
           resources: { wood: 100, stone: 50, metal: 25, gems: 5, food: 200, maxStorage: 1000 },
@@ -138,7 +98,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     } catch (error) {
       console.error('Failed to load huts:', error)
     }
-  }, [hutZones, castleTypes])
+  }, [hutZones, selectedCastleType])
 
   // Загружаем существующие хижины
   useEffect(() => {
@@ -227,7 +187,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
     setHoveredTile({ x, y })
     
     const zone = getZoneForPosition(x, y)
-    if (!zone || !selectedCastleType) {
+    if (!zone) {
       setConstruction(null)
       return
     }
@@ -247,7 +207,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
   }, [character, getZoneForPosition, calculatePrice, checkCollision, selectedCastleType])
 
   const handleTileClick = useCallback((x: number, y: number) => {
-    if (!construction || !construction.canBuild || !character || !selectedCastleType) return
+    if (!construction || !construction.canBuild || !character) return
 
     buildHut(x, y, construction.zone, selectedCastleType, construction.cost)
   }, [construction, character, selectedCastleType, buildHut])
@@ -267,9 +227,12 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
       <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-600">
-          <h2 className="text-2xl font-bold text-fantasy-gold">
-            👑 Строительство королевства
-          </h2>
+          <div>
+            <h2 className="text-2xl font-bold text-fantasy-gold">
+              {selectedCastleType.emoji} Размещение: {selectedCastleType.name}
+            </h2>
+            <p className="text-sm text-gray-400">Выберите место на карте</p>
+          </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
@@ -292,39 +255,29 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                 </p>
               </div>
 
-              {/* Выбор типа замка */}
+              {/* Информация о выбранном замке */}
               <div className="bg-gray-700 rounded-lg p-3">
                 <h3 className="text-lg font-semibold text-fantasy-gold mb-3">
-                  🏰 Выберите тип замка
+                  {selectedCastleType.emoji} {selectedCastleType.name}
                 </h3>
-                <div className="space-y-2">
-                  {castleTypes.map((castle) => (
-                    <div
-                      key={castle.id}
-                      onClick={() => setSelectedCastleType(castle)}
-                      className={`p-3 rounded-lg cursor-pointer transition-all ${
-                        selectedCastleType?.id === castle.id
-                          ? 'bg-fantasy-gold text-black'
-                          : 'bg-gray-600 hover:bg-gray-500 text-white'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center">
-                          <span className="text-lg mr-2">{castle.emoji}</span>
-                          <span className="font-semibold text-sm">{castle.name}</span>
-                        </div>
-                        <span className="text-xs font-bold">
-                          {castle.basePrice} 💰
-                        </span>
-                      </div>
-                      <p className="text-xs opacity-75 mb-2">{castle.description}</p>
-                      <div className="flex space-x-2 text-xs">
-                        <span>⚡{castle.bonuses.production}</span>
-                        <span>🛡️{castle.bonuses.defense}</span>
-                        <span>📦{castle.bonuses.capacity}</span>
-                      </div>
-                    </div>
-                  ))}
+                <p className="text-sm text-gray-300 mb-3">{selectedCastleType.description}</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>⚡ Производство:</span>
+                    <span className="text-fantasy-gold">{selectedCastleType.bonuses.production}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>🛡️ Защита:</span>
+                    <span className="text-fantasy-gold">{selectedCastleType.bonuses.defense}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>📦 Вместимость:</span>
+                    <span className="text-fantasy-gold">{selectedCastleType.bonuses.capacity}</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span>💰 Базовая стоимость:</span>
+                    <span className="text-fantasy-gold">{selectedCastleType.basePrice}</span>
+                  </div>
                 </div>
               </div>
 
@@ -377,7 +330,7 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                       {construction.reason}
                     </p>
                   )}
-                  {construction.canBuild && selectedCastleType && (
+                  {construction.canBuild && (
                     <button
                       onClick={() => handleTileClick(construction.x, construction.y)}
                       disabled={isBuilding}
@@ -385,11 +338,6 @@ export default function HutBuilder({ onClose, mapWidth, mapHeight, tileSize }: H
                     >
                       {isBuilding ? 'Основываем...' : `${selectedCastleType.emoji} Построить ${selectedCastleType.name}`}
                     </button>
-                  )}
-                  {!selectedCastleType && (
-                    <p className="text-sm text-yellow-400 mt-2">
-                      Выберите тип замка
-                    </p>
                   )}
                 </div>
               )}

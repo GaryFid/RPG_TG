@@ -8,7 +8,6 @@ import CityShop from '@/components/CityShop'
 import Inventory from '@/components/Inventory'
 import HutManager from '@/components/HutManager'
 import MainMenu from '@/components/MainMenu'
-import CryptoWallet from '@/components/CryptoWallet'
 import toast, { Toaster } from 'react-hot-toast'
 
 export default function Home() {
@@ -86,7 +85,6 @@ export default function Home() {
   if (isAuthenticated && !characterExists && currentView === 'character-creation') {
     return (
       <div>
-        <CryptoWallet />
         <Toaster 
           position="top-center"
           toastOptions={{
@@ -106,7 +104,6 @@ export default function Home() {
   if (isAuthenticated && characterExists && character) {
     return (
       <div>
-        <CryptoWallet />
         <Toaster 
           position="top-center"
           toastOptions={{

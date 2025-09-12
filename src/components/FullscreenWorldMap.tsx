@@ -6,6 +6,8 @@ import { TiledMap } from '@/lib/tiledMapRenderer'
 import TiledMapViewer from './TiledMapViewer'
 import CharacterSprite, { useCharacterSprites } from './CharacterSprite'
 import HutBuilder from './HutBuilder'
+import CastleSelector from './CastleSelector'
+import { CastleType } from '@/types/game'
 
 interface FullscreenWorldMapProps {
   onClose: () => void
@@ -23,7 +25,9 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<HTMLDivElement>(null)
   const { characters, selectedCharacter, selectCharacter } = useCharacterSprites()
+  const [showCastleSelector, setShowCastleSelector] = useState(false)
   const [showHutBuilder, setShowHutBuilder] = useState(false)
+  const [selectedCastleType, setSelectedCastleType] = useState<CastleType | null>(null)
 
   // Загружаем данные карты
   useEffect(() => {
@@ -156,7 +160,7 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
         <div className="flex items-center space-x-2">
           {/* Кнопка строительства королевства */}
           <button
-            onClick={() => setShowHutBuilder(true)}
+            onClick={() => setShowCastleSelector(true)}
             className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-white text-sm"
             title="Основать королевство"
           >
@@ -309,13 +313,29 @@ export default function FullscreenWorldMap({ onClose }: FullscreenWorldMapProps)
         </div>
       </div>
 
+      {/* Выбор замка */}
+      {showCastleSelector && (
+        <CastleSelector
+          onClose={() => setShowCastleSelector(false)}
+          onSelectCastle={(castleType) => {
+            setSelectedCastleType(castleType)
+            setShowCastleSelector(false)
+            setShowHutBuilder(true)
+          }}
+        />
+      )}
+
       {/* Строительство хижин */}
-      {showHutBuilder && mapData && (
+      {showHutBuilder && mapData && selectedCastleType && (
         <HutBuilder
-          onClose={() => setShowHutBuilder(false)}
+          onClose={() => {
+            setShowHutBuilder(false)
+            setSelectedCastleType(null)
+          }}
           mapWidth={mapData.width}
           mapHeight={mapData.height}
           tileSize={mapData.tilewidth}
+          selectedCastleType={selectedCastleType}
         />
       )}
     </div>
